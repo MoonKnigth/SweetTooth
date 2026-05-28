@@ -1,0 +1,30 @@
+# 🚫 กฎสำหรับ Frontend (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# 🚫 กฎสำหรับ Backend (Laravel)
+backend/vendor/
+backend/public/storage/
+backend/storage/framework/
+backend/storage/logs/
+backend/bootstrap/cache/
+
+# 🚫 ไฟล์ความลับ
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.backup
+backend/.env.production
+frontend/.env
+frontend/.env.local
+
+# Misc & OS Files
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+.cursor/
