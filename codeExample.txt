@@ -1,0 +1,359 @@
+import React, { useState, useMemo } from 'react';
+import { ShoppingCart, Plus, Minus, XCircle, CheckCircle, Leaf, User, ArrowRight, LogIn, Mail, Lock } from 'lucide-react';
+
+// --- Mock Data ---
+const initialProducts = [
+  { id: '1', name: 'Waffle with Berries', category: 'Waffle', price: 6.5, image: 'https://images.unsplash.com/photo-1562376552-0d160a2f9f37?auto=format&fit=crop&w=400&q=80' },
+  { id: '2', name: 'Vanilla Bean Crème Brûlée', category: 'Crème Brûlée', price: 7.0, image: 'https://images.unsplash.com/photo-1473314715713-2a2371452f1e?auto=format&fit=crop&w=400&q=80' },
+  { id: '3', name: 'Macaron Mix of Five', category: 'Macaron', price: 8.0, image: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=400&q=80' },
+  { id: '4', name: 'Classic Tiramisu', category: 'Tiramisu', price: 5.5, image: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=400&q=80' },
+  { id: '5', name: 'Pistachio Baklava', category: 'Baklava', price: 4.0, image: 'https://images.unsplash.com/photo-1519676867240-f03562e64548?auto=format&fit=crop&w=400&q=80' },
+  { id: '6', name: 'Lemon Meringue Pie', category: 'Pie', price: 5.0, image: 'https://images.unsplash.com/photo-1519915028121-7d3463d20eb4?auto=format&fit=crop&w=400&q=80' },
+];
+
+export default function App() {
+  // Navigation State
+  const [currentPage, setCurrentPage] = useState('home'); // 'home', 'menu', 'auth'
+  const [authMode, setAuthMode] = useState('login'); // 'login', 'register'
+  
+  // App State
+  const [cart, setCart] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useState(null); // Mock User Session
+
+  // --- Cart Handlers ---
+  const handleAddToCart = (productId) => setCart(prev => ({ ...prev, [productId]: 1 }));
+  const handleIncrement = (productId) => setCart(prev => ({ ...prev, [productId]: prev[productId] + 1 }));
+  const handleDecrement = (productId) => {
+    setCart(prev => {
+      const newQty = prev[productId] - 1;
+      if (newQty <= 0) {
+        const newCart = { ...prev };
+        delete newCart[productId];
+        return newCart;
+      }
+      return { ...prev, [productId]: newQty };
+    });
+  };
+  const handleRemoveItem = (productId) => {
+    setCart(prev => {
+      const newCart = { ...prev };
+      delete newCart[productId];
+      return newCart;
+    });
+  };
+  
+  const handleConfirmOrder = () => {
+    if (!user) {
+      setCurrentPage('auth');
+      return;
+    }
+    setIsModalOpen(true);
+  };
+  
+  const handleStartNewOrder = () => {
+    setCart({});
+    setIsModalOpen(false);
+  };
+
+  const handleMockLogin = (e) => {
+    e.preventDefault();
+    setUser({ name: 'Guest User', role: 'customer' });
+    setCurrentPage('menu');
+  };
+
+  // --- Derived State ---
+  const cartItems = useMemo(() => {
+    return Object.keys(cart).map(id => ({ ...initialProducts.find(p => p.id === id), quantity: cart[id] }));
+  }, [cart]);
+  const totalItemsCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const totalAmount = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  // --- Components ---
+  const Navbar = () => (
+    <nav className="bg-white sticky top-0 z-40 shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <div 
+          className="text-2xl font-bold text-[#c73b0f] cursor-pointer flex items-center gap-2"
+          onClick={() => setCurrentPage('home')}
+        >
+          🍰 SweetTooth
+        </div>
+        <div className="flex items-center gap-6">
+          <button 
+            onClick={() => setCurrentPage('menu')}
+            className={`font-semibold transition-colors ${currentPage === 'menu' ? 'text-[#c73b0f]' : 'text-[#87635a] hover:text-[#260f08]'}`}
+          >
+            Menu
+          </button>
+          
+          <button 
+            onClick={() => setCurrentPage('menu')}
+            className="relative p-2 text-[#87635a] hover:text-[#c73b0f] transition-colors"
+          >
+            <ShoppingCart className="w-6 h-6" />
+            {totalItemsCount > 0 && (
+              <span className="absolute top-0 right-0 bg-[#c73b0f] text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+                {totalItemsCount}
+              </span>
+            )}
+          </button>
+
+          {user ? (
+            <div className="flex items-center gap-2 bg-[#fcf8f6] py-2 px-4 rounded-full border border-gray-100">
+              <User className="w-5 h-5 text-[#87635a]" />
+              <span className="text-sm font-semibold text-[#260f08]">{user.name}</span>
+            </div>
+          ) : (
+            <button 
+              onClick={() => setCurrentPage('auth')}
+              className="flex items-center gap-2 bg-[#c73b0f] text-white py-2 px-5 rounded-full font-semibold hover:bg-[#a6310c] transition-colors"
+            >
+              <LogIn className="w-4 h-4" /> Sign In
+            </button>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+
+  const HomeView = () => (
+    <div className="flex-1 flex items-center max-w-7xl mx-auto px-6 py-12 lg:py-24 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="space-y-8">
+          <div className="inline-block bg-orange-100 text-[#c73b0f] px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
+            100% Fresh & Homemade
+          </div>
+          <h1 className="text-5xl lg:text-7xl font-bold text-[#260f08] leading-tight">
+            Life is short, <br />
+            make it <span className="text-[#c73b0f]">sweet.</span>
+          </h1>
+          <p className="text-lg text-[#87635a] max-w-md leading-relaxed">
+            Indulge in our carefully crafted desserts, baked daily with love and premium ingredients. Delivered fresh to your door.
+          </p>
+          <div className="flex gap-4">
+            <button 
+              onClick={() => setCurrentPage('menu')}
+              className="bg-[#c73b0f] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#a6310c] transition-all hover:-translate-y-1 shadow-lg shadow-orange-200 flex items-center gap-2"
+            >
+              Order Now <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+        <div className="relative">
+          <div className="absolute inset-0 bg-orange-200 rounded-full blur-3xl opacity-30 -z-10"></div>
+          <img 
+            src="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&q=80" 
+            alt="Hero Dessert" 
+            className="w-full h-[500px] object-cover rounded-[2rem] shadow-2xl"
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const AuthView = () => (
+    <div className="flex-1 flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-300">
+      <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl w-full max-w-md border border-gray-100">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-[#260f08] mb-2">
+            {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
+          </h2>
+          <p className="text-[#87635a]">
+            {authMode === 'login' ? 'Enter your details to access your account.' : 'Join us to start ordering delicious desserts.'}
+          </p>
+        </div>
+
+        {/* OAuth Button Simulation */}
+        <button className="w-full mb-6 bg-white border-2 border-gray-100 text-[#260f08] font-bold py-3 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors">
+          <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
+          Continue with Google
+        </button>
+
+        <div className="relative flex items-center py-4">
+          <div className="flex-grow border-t border-gray-200"></div>
+          <span className="flex-shrink-0 mx-4 text-[#87635a] text-sm">Or continue with email</span>
+          <div className="flex-grow border-t border-gray-200"></div>
+        </div>
+
+        <form onSubmit={handleMockLogin} className="space-y-4">
+          {authMode === 'register' && (
+            <div>
+              <label className="block text-sm font-semibold text-[#260f08] mb-1.5">Full Name</label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input type="text" placeholder="John Doe" className="w-full pl-10 pr-4 py-3 bg-[#fcf8f6] border border-gray-200 rounded-xl focus:outline-none focus:border-[#c73b0f] focus:ring-1 focus:ring-[#c73b0f] transition-all" required />
+              </div>
+            </div>
+          )}
+          <div>
+            <label className="block text-sm font-semibold text-[#260f08] mb-1.5">Email</label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input type="email" placeholder="you@example.com" className="w-full pl-10 pr-4 py-3 bg-[#fcf8f6] border border-gray-200 rounded-xl focus:outline-none focus:border-[#c73b0f] focus:ring-1 focus:ring-[#c73b0f] transition-all" required />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-[#260f08] mb-1.5">Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input type="password" placeholder="••••••••" className="w-full pl-10 pr-4 py-3 bg-[#fcf8f6] border border-gray-200 rounded-xl focus:outline-none focus:border-[#c73b0f] focus:ring-1 focus:ring-[#c73b0f] transition-all" required />
+            </div>
+          </div>
+          
+          <button type="submit" className="w-full bg-[#c73b0f] text-white py-3.5 rounded-xl font-bold text-lg hover:bg-[#a6310c] transition-colors mt-6 shadow-md shadow-orange-100">
+            {authMode === 'login' ? 'Sign In' : 'Create Account'}
+          </button>
+        </form>
+
+        <p className="text-center mt-6 text-[#87635a] text-sm">
+          {authMode === 'login' ? "Don't have an account? " : "Already have an account? "}
+          <button 
+            onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
+            className="text-[#c73b0f] font-bold hover:underline"
+          >
+            {authMode === 'login' ? 'Sign up' : 'Log in'}
+          </button>
+        </p>
+      </div>
+    </div>
+  );
+
+  const MenuView = () => (
+    <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 px-6 py-10 animate-in fade-in duration-500">
+      <div className="flex-1">
+        <h1 className="text-4xl font-bold mb-8 text-[#260f08]">Desserts</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
+          {initialProducts.map((product) => {
+            const quantity = cart[product.id] || 0;
+            return (
+              <div key={product.id} className="flex flex-col group">
+                <div className="relative mb-8">
+                  <div className="overflow-hidden rounded-xl">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className={`w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105 ${quantity > 0 ? 'border-2 border-[#c73b0f]' : ''}`}
+                    />
+                  </div>
+                  <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-40 h-11 z-10">
+                    {quantity === 0 ? (
+                      <button onClick={() => handleAddToCart(product.id)} className="w-full h-full bg-white border border-gray-300 rounded-full flex items-center justify-center gap-2 font-semibold text-[#260f08] hover:border-[#c73b0f] hover:text-[#c73b0f] transition-all shadow-sm">
+                        <ShoppingCart className="w-5 h-5 text-[#c73b0f]" /> Add to Cart
+                      </button>
+                    ) : (
+                      <div className="w-full h-full bg-[#c73b0f] rounded-full flex items-center justify-between px-3 shadow-md animate-in zoom-in-95">
+                        <button onClick={() => handleDecrement(product.id)} className="w-7 h-7 rounded-full border border-white flex items-center justify-center hover:bg-white/20 transition-colors">
+                          <Minus className="w-4 h-4 text-white" />
+                        </button>
+                        <span className="text-white font-semibold">{quantity}</span>
+                        <button onClick={() => handleIncrement(product.id)} className="w-7 h-7 rounded-full border border-white flex items-center justify-center hover:bg-white/20 transition-colors">
+                          <Plus className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <p className="text-[#87635a] text-sm mb-1">{product.category}</p>
+                  <p className="font-semibold text-lg leading-tight mb-1">{product.name}</p>
+                  <p className="text-[#c73b0f] font-semibold">${product.price.toFixed(2)}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="lg:w-96 shrink-0">
+        <div className="bg-white p-6 rounded-xl shadow-sm sticky top-28 border border-gray-50">
+          <h2 className="text-[#c73b0f] text-2xl font-bold mb-6">Your Cart ({totalItemsCount})</h2>
+          {totalItemsCount === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <div className="w-32 h-32 mb-4 opacity-50 text-[#87635a] flex items-center justify-center bg-[#fcf8f6] rounded-full">
+                <ShoppingCart className="w-12 h-12" />
+              </div>
+              <p className="text-[#87635a] font-semibold">Your added items will appear here</p>
+            </div>
+          ) : (
+            <div className="flex flex-col">
+              <div className="max-h-[50vh] overflow-y-auto pr-2">
+                {cartItems.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between py-4 border-b border-[#fcf8f6]">
+                    <div>
+                      <p className="font-semibold text-[#260f08] mb-1">{item.name}</p>
+                      <div className="flex items-center gap-4 text-sm">
+                        <span className="text-[#c73b0f] font-semibold">{item.quantity}x</span>
+                        <span className="text-[#87635a]">@ ${item.price.toFixed(2)}</span>
+                        <span className="font-semibold text-[#87635a]">${(item.price * item.quantity).toFixed(2)}</span>
+                      </div>
+                    </div>
+                    <button onClick={() => handleRemoveItem(item.id)} className="text-gray-300 hover:text-[#260f08] transition-colors"><XCircle className="w-5 h-5" /></button>
+                  </div>
+                ))}
+              </div>
+              <div className="py-6 flex items-center justify-between">
+                <span className="text-[#260f08]">Order Total</span>
+                <span className="text-3xl font-bold text-[#260f08]">${totalAmount.toFixed(2)}</span>
+              </div>
+              <div className="bg-[#fcf8f6] rounded-lg p-4 flex items-center justify-center gap-2 mb-6">
+                <Leaf className="w-5 h-5 text-green-600" />
+                <p className="text-[#260f08] text-sm">This is a <span className="font-semibold">carbon-neutral</span> delivery</p>
+              </div>
+              <button onClick={handleConfirmOrder} className="w-full bg-[#c73b0f] text-white py-4 rounded-full font-bold hover:bg-[#a6310c] transition-colors shadow-lg shadow-orange-100">
+                {user ? 'Confirm Order' : 'Sign in to Order'}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen flex flex-col bg-[#fcf8f6] font-sans">
+      <Navbar />
+      
+      {currentPage === 'home' && <HomeView />}
+      {currentPage === 'auth' && <AuthView />}
+      {currentPage === 'menu' && <MenuView />}
+
+      {/* Order Confirmed Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in" onClick={() => setIsModalOpen(false)}></div>
+          <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95">
+            <CheckCircle className="w-16 h-16 text-green-500 mb-6 mx-auto" />
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-[#260f08] mb-2">Order Confirmed</h2>
+              <p className="text-[#87635a]">We hope you enjoy your food, {user?.name.split(' ')[0]}!</p>
+            </div>
+            <div className="bg-[#fcf8f6] rounded-xl p-6 mb-8 border border-gray-100">
+              <div className="max-h-48 overflow-y-auto mb-4 pr-2">
+                {cartItems.map((item) => (
+                  <div key={item.id} className="flex items-center gap-4 py-3 border-b border-gray-200/50 last:border-0">
+                    <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover" />
+                    <div className="flex-1">
+                      <p className="font-semibold text-[#260f08] text-sm line-clamp-1">{item.name}</p>
+                      <div className="flex items-center gap-3 text-sm mt-1">
+                        <span className="text-[#c73b0f] font-semibold">{item.quantity}x</span>
+                      </div>
+                    </div>
+                    <div className="font-semibold text-[#260f08]">${(item.price * item.quantity).toFixed(2)}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-4 border-t border-gray-200/50 flex items-center justify-between">
+                <span className="text-[#260f08] text-sm">Order Total</span>
+                <span className="text-2xl font-bold text-[#260f08]">${totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+            <button onClick={handleStartNewOrder} className="w-full bg-[#c73b0f] text-white py-4 rounded-full font-bold hover:bg-[#a6310c] transition-colors">
+              Start New Order
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

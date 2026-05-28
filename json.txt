@@ -1,0 +1,56 @@
+GET /api/products
+{
+  "status": "success",
+  "data": [
+    {
+      "id": "prod_12345",
+      "categoryId": 1,
+      "categoryName": "Waffle",
+      "name": "Waffle with Berries",
+      "price": 6.50,
+      "imageUrl": "/images/waffle.jpg",
+      "isActive": true
+    },
+    {
+      "id": "prod_12346",
+      "categoryId": 2,
+      "categoryName": "Crème Brûlée",
+      "name": "Vanilla Bean Crème Brûlée",
+      "price": 7.00,
+      "imageUrl": "/images/creme-brulee.jpg",
+      "isActive": true
+    }
+  ],
+  "meta": {
+    "total": 24,
+    "page": 1,
+    "perPage": 10
+  }
+}
+POST /api/orders
+{
+  "status": "success",
+  "message": "Order confirmed successfully",
+  "data": {
+    "orderId": "ord_98765",
+    "status": "paid",
+    "totalAmount": 46.50,
+    "createdAt": "2026-05-28T07:24:32Z",
+    "items": [
+      {
+        "productId": "prod_12347",
+        "productName": "Classic Tiramisu",
+        "quantity": 1,
+        "priceAtPurchase": 5.50,
+        "imageUrl": "/images/tiramisu.jpg"
+      },
+      {
+        "productId": "prod_12346",
+        "productName": "Vanilla Bean Crème Brûlée",
+        "quantity": 4,
+        "priceAtPurchase": 7.00,
+        "imageUrl": "/images/creme-brulee.jpg"
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+import { Product } from '@/types';
+
+export const mockProducts: Product[] = [
+  {
+    id: 'prod_1',
+    categoryId: 1,
+    categoryName: 'Waffle',
+    name: 'Waffle with Berries',
+    price: 6.5,
+    imageUrl: 'https://images.unsplash.com/photo-1562376552-0d160a2f9f37?auto=format&fit=crop&w=400&q=80',
+    isActive: true,
+  },
+  {
+    id: 'prod_2',
+    categoryId: 2,
+    categoryName: 'Crème Brûlée',
+    name: 'Vanilla Bean Crème Brûlée',
+    price: 7.0,
+    imageUrl: 'https://images.unsplash.com/photo-1473314715713-2a2371452f1e?auto=format&fit=crop&w=400&q=80',
+    isActive: true,
+  },
+  {
+    id: 'prod_3',
+    categoryId: 3,
+    categoryName: 'Macaron',
+    name: 'Macaron Mix of Five',
+    price: 8.0,
+    imageUrl: 'https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=400&q=80',
+    isActive: true,
+  },
+  {
+    id: 'prod_4',
+    categoryId: 4,
+    categoryName: 'Tiramisu',
+    name: 'Classic Tiramisu',
+    price: 5.5,
+    imageUrl: 'https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=400&q=80',
+    isActive: true,
+  },
+  {
+    id: 'prod_5',
+    categoryId: 5,
+    categoryName: 'Baklava',
+    name: 'Pistachio Baklava',
+    price: 4.0,
+    imageUrl: 'https://images.unsplash.com/photo-1519676867240-f03562e64548?auto=format&fit=crop&w=400&q=80',
+    isActive: true,
+  },
+  {
+    id: 'prod_6',
+    categoryId: 6,
+    categoryName: 'Pie',
+    name: 'Lemon Meringue Pie',
+    price: 5.0,
+    imageUrl: 'https://images.unsplash.com/photo-1519915028121-7d3463d20eb4?auto=format&fit=crop&w=400&q=80',
+    isActive: true,
+  },
+];
