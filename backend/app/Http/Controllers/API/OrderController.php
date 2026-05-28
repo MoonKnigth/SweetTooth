@@ -56,7 +56,7 @@ class OrderController extends Controller
                 'status' => 'success',
                 'message' => 'Order confirmed successfully',
                 'data' => [
-                    'orderId' => 'ord_' . str_pad($order->id, 5, '0', STR_PAD_LEFT),
+                    'orderId' => 'ord_' . substr($order->id, 0, 8),
                     'status' => 'paid',
                 ]
             ], 200);

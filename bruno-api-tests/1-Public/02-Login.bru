@@ -1,0 +1,22 @@
+meta {
+  name: 02. Login (Auto Save Token)
+  type: http
+  seq: 2
+}
+post {
+  url: {{base_url}}/api/login
+  body: json
+  auth: none
+}
+body:json {
+  {
+    "email": "admin@test.com",
+    "password": "password"
+  }
+}
+script:post-response {
+  if (res.status === 200 && res.body.data && res.body.data.access_token) {
+    bru.setEnvVar("token", res.body.data.access_token);
+    console.log("🔥 Token Saved to Environment!");
+  }
+}

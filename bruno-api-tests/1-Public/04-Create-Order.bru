@@ -1,0 +1,21 @@
+meta {
+  name: 04. Create Order
+  type: http
+  seq: 4
+}
+post {
+  url: {{base_url}}/api/orders
+  body: json
+  auth: none
+}
+body:json {
+  {
+    "user_id": null,
+    "items": [
+      {
+        "product_id": "REPLACE_WITH_PRODUCT_UUID",
+        "quantity": 2
+      }
+    ]
+  }
+}

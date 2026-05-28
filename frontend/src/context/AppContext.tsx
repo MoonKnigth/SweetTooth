@@ -17,18 +17,21 @@ interface AppContextProps {
   totalAmount: number;
   isModalOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
+  isLoginModalOpen: boolean;
+  setIsLoginModalOpen: (isOpen: boolean) => void;
   user: User | null;
-  setUser: (user: User | null) => void;
+  token: string | null;
   products: Product[];
   
   // Actions
+  login: (token: string, user: User) => void;
+  logout: () => Promise<void>;
   handleAddToCart: (productId: string) => void;
   handleIncrement: (productId: string) => void;
   handleDecrement: (productId: string) => void;
   handleRemoveItem: (productId: string) => void;
   handleConfirmOrder: () => void;
   handleStartNewOrder: () => void;
-  handleMockLogin: (e: React.FormEvent) => void;
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -42,18 +45,58 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
-  // Fetch Products from Laravel API
+  // Auto Login
+  useEffect(() => {
+    const savedToken = localStorage.getItem('access_token');
+    if (savedToken) {
+      setToken(savedToken);
+      fetch('http://localhost:8000/api/user', {
+        headers: {
+          'Authorization': `Bearer ${savedToken}`,
+          'Accept': 'application/json'
+        }
+      })
+      .then(res => {
+        if (res.ok) return res.json();
+        throw new Error('Unauthorized');
+      })
+      .then(data => {
+        if (data && data.id) {
+          setUser(data);
+        }
+      })
+      .catch(() => {
+        // Invalid token
+        localStorage.removeItem('access_token');
+        setToken(null);
+        setUser(null);
+      });
+    }
+  }, []);
+
+  // Fetch Products
   useEffect(() => {
     fetch('http://localhost:8000/api/products')
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
-          const mappedProducts = data.data.map((p: any) => ({
-            id: p.id.toString(),
+          interface ApiProduct {
+            id: string;
+            name: string;
+            category_id: number;
+            category: string;
+            price: string;
+            image_thumbnail: string;
+            isActive: boolean;
+          }
+          const mappedProducts = data.data.map((p: ApiProduct) => ({
+            id: p.id,
             name: p.name,
-            categoryId: p.id,
+            categoryId: p.category_id,
             categoryName: p.category,
             price: parseFloat(p.price),
             imageUrl: p.image_thumbnail,
@@ -64,6 +107,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
       })
       .catch(err => console.error("Failed to fetch products:", err));
   }, []);
+
+  // --- Auth Handlers ---
+  const login = (newToken: string, loggedInUser: User) => {
+    localStorage.setItem('access_token', newToken);
+    setToken(newToken);
+    setUser(loggedInUser);
+    setIsLoginModalOpen(false);
+  };
+
+  const logout = async () => {
+    if (token) {
+      try {
+        await fetch('http://localhost:8000/api/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+      } catch (err) {
+        console.error("Logout error", err);
+      }
+    }
+    localStorage.removeItem('access_token');
+    setToken(null);
+    setUser(null);
+  };
 
   // --- Cart Handlers ---
   const handleAddToCart = (productId: string) => {
@@ -96,30 +166,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const handleConfirmOrder = async () => {
-    if (!user) {
-      setCurrentPage('auth');
-      return;
-    }
-
     try {
       const items = Object.keys(cart).map(id => ({
-        product_id: parseInt(id),
+        product_id: id, // It's UUID now
         quantity: cart[id]
       }));
 
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const response = await fetch('http://localhost:8000/api/orders', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ items, user_id: 1 }) // dummy user_id
+        headers,
+        body: JSON.stringify({ items, user_id: user ? user.id : null })
       });
 
       const data = await response.json();
       if (data.status === 'success') {
         setIsModalOpen(true);
       } else {
-        alert('Failed to confirm order: ' + data.message);
+        alert('Failed to confirm order: ' + (data.message || 'Unknown error'));
       }
     } catch (err) {
       console.error(err);
@@ -130,17 +202,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const handleStartNewOrder = () => {
     setCart({});
     setIsModalOpen(false);
-  };
-
-  const handleMockLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setUser({
-      id: 'usr_1',
-      name: 'Guest User',
-      email: 'guest@example.com',
-      role: 'customer',
-    });
-    setCurrentPage('menu');
   };
 
   // --- Derived State ---
@@ -187,16 +248,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
         totalAmount,
         isModalOpen,
         setIsModalOpen,
+        isLoginModalOpen,
+        setIsLoginModalOpen,
         user,
-        setUser,
+        token,
         products,
+        login,
+        logout,
         handleAddToCart,
         handleIncrement,
         handleDecrement,
         handleRemoveItem,
         handleConfirmOrder,
         handleStartNewOrder,
-        handleMockLogin,
       }}
     >
       {children}

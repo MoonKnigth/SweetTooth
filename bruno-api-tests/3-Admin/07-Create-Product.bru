@@ -1,0 +1,22 @@
+meta {
+  name: 07. Create Product
+  type: http
+  seq: 1
+}
+post {
+  url: {{base_url}}/api/admin/products
+  body: json
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+body:json {
+  {
+    "name": "New Chocolate Cake",
+    "category_id": 1,
+    "price": 12.50,
+    "image_thumbnail": "https://images.unsplash.com/photo-1578985545062-69928b1d9587",
+    "isActive": true
+  }
+}

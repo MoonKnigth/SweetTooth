@@ -1,0 +1,90 @@
+### ---------------------------------------------------
+### 🌍 PUBLIC ROUTES (No Token Required)
+### ---------------------------------------------------
+
+### 1. Register a new user
+POST http://localhost:8000/api/register
+Content-Type: application/json
+
+{
+  "name": "New Customer",
+  "email": "customer@example.com",
+  "password": "password"
+}
+
+### 2. Login
+# @name login
+POST http://localhost:8000/api/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "password"
+}
+# Note: Copy the "access_token" from the response to use in PROTECTED routes.
+
+### 3. Get all active products
+GET http://localhost:8000/api/products
+Content-Type: application/json
+
+### 4. Create an Order
+POST http://localhost:8000/api/orders
+Content-Type: application/json
+
+{
+  "user_id": null,
+  "items": [
+    {
+      "product_id": "REPLACE_WITH_PRODUCT_UUID",
+      "quantity": 2
+    }
+  ]
+}
+
+
+### ---------------------------------------------------
+### 🔐 PROTECTED ROUTES (Requires Bearer Token)
+### ---------------------------------------------------
+@token = REPLACE_WITH_YOUR_ACCESS_TOKEN
+
+### 5. Get current user profile
+GET http://localhost:8000/api/user
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 6. Logout
+POST http://localhost:8000/api/logout
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+
+### ---------------------------------------------------
+### 🛠 ADMIN ROUTES (Requires Admin Bearer Token)
+### ---------------------------------------------------
+
+### 7. Add a new Product
+POST http://localhost:8000/api/admin/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "New Chocolate Cake",
+  "category_id": 1,
+  "price": 12.50,
+  "image_thumbnail": "https://images.unsplash.com/photo-1578985545062-69928b1d9587",
+  "isActive": true
+}
+
+### 8. Update a Product
+PUT http://localhost:8000/api/admin/products/REPLACE_WITH_PRODUCT_UUID
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "price": 15.00
+}
+
+### 9. Delete a Product
+DELETE http://localhost:8000/api/admin/products/REPLACE_WITH_PRODUCT_UUID
+Authorization: Bearer {{token}}
+Content-Type: application/json

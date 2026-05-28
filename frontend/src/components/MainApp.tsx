@@ -6,6 +6,7 @@ import HomeView from './HomeView';
 import AuthView from './AuthView';
 import MenuView from './MenuView';
 import OrderModal from './OrderModal';
+import LoginModal from './LoginModal';
 import { useApp } from '@/context/AppContext';
 
 export default function MainApp() {
@@ -22,6 +23,7 @@ export default function MainApp() {
       </main>
 
       <OrderModal />
+      <LoginModal />
     </div>
   );
 }

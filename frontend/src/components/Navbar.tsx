@@ -5,7 +5,7 @@ import { ShoppingCart, LogIn, User } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 
 export default function Navbar() {
-  const { currentPage, setCurrentPage, totalItemsCount, user } = useApp();
+  const { currentPage, setCurrentPage, totalItemsCount, user, setIsLoginModalOpen, logout } = useApp();
 
   return (
     <nav className="bg-white sticky top-0 z-40 shadow-sm">
@@ -42,13 +42,30 @@ export default function Navbar() {
           </button>
 
           {user ? (
-            <div className="flex items-center gap-2 bg-[#fcf8f6] py-2 px-4 rounded-full border border-gray-100">
-              <User className="w-5 h-5 text-[#87635a]" />
-              <span className="text-sm font-semibold text-[#260f08]">{user.name}</span>
+            <div className="flex items-center gap-4 bg-[#fcf8f6] py-2 px-4 rounded-full border border-gray-100">
+              <div className="flex items-center gap-2">
+                <User className="w-5 h-5 text-[#87635a]" />
+                <span className="text-sm font-semibold text-[#260f08]">👋 สวัสดี, {user.name}</span>
+              </div>
+              
+              {user.role === 'admin' && (
+                <button
+                  className="text-xs font-bold text-white bg-indigo-600 px-3 py-1.5 rounded-full hover:bg-indigo-700 transition-colors"
+                >
+                  ⚙️ Admin Dashboard
+                </button>
+              )}
+              
+              <button
+                onClick={logout}
+                className="text-xs font-bold text-[#c73b0f] border border-[#c73b0f] px-3 py-1.5 rounded-full hover:bg-[#c73b0f] hover:text-white transition-colors"
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <button
-              onClick={() => setCurrentPage('auth')}
+              onClick={() => setIsLoginModalOpen(true)}
               className="flex items-center gap-2 bg-[#c73b0f] text-white py-2 px-5 rounded-full font-semibold hover:bg-[#a6310c] transition-colors"
             >
               <LogIn className="w-4 h-4" /> Sign In

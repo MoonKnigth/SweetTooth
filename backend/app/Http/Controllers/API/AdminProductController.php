@@ -18,7 +18,7 @@ class AdminProductController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'image_thumbnail' => 'nullable|string',
             'isActive' => 'boolean'
@@ -33,7 +33,7 @@ class AdminProductController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id): JsonResponse
+    public function update(Request $request, string $id): JsonResponse
     {
         if ($request->user()->role !== 'admin') {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized. Admin access required.'], 403);
@@ -46,7 +46,7 @@ class AdminProductController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'category' => 'sometimes|required|string|max:255',
+            'category_id' => 'sometimes|required|exists:categories,id',
             'price' => 'sometimes|required|numeric|min:0',
             'image_thumbnail' => 'nullable|string',
             'isActive' => 'boolean'
@@ -61,7 +61,7 @@ class AdminProductController extends Controller
         ]);
     }
 
-    public function destroy(Request $request, $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
         if ($request->user()->role !== 'admin') {
             return response()->json(['status' => 'error', 'message' => 'Unauthorized. Admin access required.'], 403);
