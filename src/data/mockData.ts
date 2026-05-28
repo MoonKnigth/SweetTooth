@@ -7,7 +7,7 @@ export const mockProducts: Product[] = [
     categoryName: 'Waffle',
     name: 'Waffle with Berries',
     price: 6.5,
-    imageUrl: 'https://images.unsplash.com/photo-1562376552-0d160a2f9f37?auto=format&fit=crop&w=400&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1568051243851-f9b136146e97?auto=format&fit=crop&w=400&q=80',
     isActive: true,
   },
   {
@@ -16,7 +16,7 @@ export const mockProducts: Product[] = [
     categoryName: 'Crème Brûlée',
     name: 'Vanilla Bean Crème Brûlée',
     price: 7.0,
-    imageUrl: 'https://images.unsplash.com/photo-1473314715713-2a2371452f1e?auto=format&fit=crop&w=400&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?auto=format&fit=crop&w=400&q=80',
     isActive: true,
   },
   {
@@ -52,7 +52,7 @@ export const mockProducts: Product[] = [
     categoryName: 'Pie',
     name: 'Lemon Meringue Pie',
     price: 5.0,
-    imageUrl: 'https://images.unsplash.com/photo-1519915028121-7d3463d20eb4?auto=format&fit=crop&w=400&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?auto=format&fit=crop&w=400&q=80',
     isActive: true,
   },
   {
