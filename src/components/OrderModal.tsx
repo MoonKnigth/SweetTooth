@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { CheckCircle } from 'lucide-react';
+import Image from 'next/image';
 import { useApp } from '@/context/AppContext';
 
 export default function OrderModal() {
@@ -29,7 +30,7 @@ export default function OrderModal() {
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-[#260f08] mb-2">Order Confirmed</h2>
           <p className="text-[#87635a]">
-            We hope you enjoy your food, {firstName}!
+            We hope you enjoy your food!
           </p>
         </div>
         <div className="bg-[#fcf8f6] rounded-xl p-6 mb-8 border border-gray-100">
@@ -39,18 +40,23 @@ export default function OrderModal() {
                 key={item.id}
                 className="flex items-center gap-4 py-3 border-b border-gray-200/50 last:border-0"
               >
-                <img
+                <Image
                   src={item.imageUrl}
                   alt={item.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-lg object-cover"
                 />
-                <div className="flex-1">
-                  <p className="font-semibold text-[#260f08] text-sm line-clamp-1">
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-[#260f08] text-sm truncate">
                     {item.name}
                   </p>
-                  <div className="flex items-center gap-3 text-sm mt-1">
-                    <span className="text-[#c73b0f] font-semibold">
+                  <div className="flex items-center gap-2 text-sm mt-1">
+                    <span className="text-[#c73b0f] font-bold">
                       {item.quantity}x
+                    </span>
+                    <span className="text-[#87635a]">
+                      @ ${item.price.toFixed(2)}
                     </span>
                   </div>
                 </div>

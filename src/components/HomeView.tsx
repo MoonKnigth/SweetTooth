@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 import { useApp } from '@/context/AppContext';
 
 export default function HomeView() {
@@ -32,9 +33,12 @@ export default function HomeView() {
         </div>
         <div className="relative">
           <div className="absolute inset-0 bg-orange-200 rounded-full blur-3xl opacity-30 -z-10"></div>
-          <img
+          <Image
             src="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&q=80"
             alt="Hero Dessert"
+            width={800}
+            height={500}
+            priority
             className="w-full h-[500px] object-cover rounded-[2rem] shadow-2xl"
           />
         </div>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ShoppingCart, Minus, Plus } from 'lucide-react';
+import Image from 'next/image';
 import { Product } from '@/types';
 import { useApp } from '@/context/AppContext';
 
@@ -17,9 +18,11 @@ export default function ProductCard({ product }: ProductCardProps) {
     <div className="flex flex-col group">
       <div className="relative mb-8">
         <div className="overflow-hidden rounded-xl">
-          <img
+          <Image
             src={product.imageUrl}
             alt={product.name}
+            width={400}
+            height={400}
             className={`w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105 ${
               quantity > 0 ? 'border-2 border-[#c73b0f]' : ''
             }`}
