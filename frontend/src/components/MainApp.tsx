@@ -7,7 +7,10 @@ import AuthView from './AuthView';
 import MenuView from './MenuView';
 import OrderModal from './OrderModal';
 import LoginModal from './LoginModal';
+import AdminDashboard from './AdminDashboard';
 import { useApp } from '@/context/AppContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function MainApp() {
   const { currentPage } = useApp();
@@ -20,10 +23,24 @@ export default function MainApp() {
         {currentPage === 'home' && <HomeView />}
         {currentPage === 'auth' && <AuthView />}
         {currentPage === 'menu' && <MenuView />}
+        {currentPage === 'admin' && <AdminDashboard />}
       </main>
 
       <OrderModal />
       <LoginModal />
+      
+      <ToastContainer 
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 }

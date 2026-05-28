@@ -2,19 +2,18 @@
 
 import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { toast } from 'react-toastify';
 
 export default function LoginModal() {
   const { isLoginModalOpen, setIsLoginModalOpen, login } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   if (!isLoginModalOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     try {
@@ -31,16 +30,17 @@ export default function LoginModal() {
 
       if (response.ok && data.status === 'success') {
         // Success
+        toast.success(`Welcome back, ${data.data.user.name}! 🍰`);
         login(data.data.access_token, data.data.user);
         // Clear form
         setEmail('');
         setPassword('');
       } else {
         // Error
-        setError(data.message || 'Login failed. Please check your credentials.');
+        toast.error(data.message || 'Login failed. Please check your credentials.');
       }
     } catch (err) {
-      setError('Network error. Could not connect to the server.');
+      toast.error('Network error. Could not connect to the server.');
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -59,12 +59,6 @@ export default function LoginModal() {
         <h2 className="text-2xl font-bold text-[#260f08] mb-6 text-center">
           Welcome Back! 🍰
         </h2>
-        
-        {error && (
-          <div className="bg-red-100 text-red-600 p-3 rounded-md text-sm mb-4">
-            {error}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

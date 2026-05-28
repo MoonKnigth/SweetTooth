@@ -2,8 +2,9 @@
 
 import React, { createContext, useContext, useState, useMemo, useEffect, ReactNode } from 'react';
 import { User, CartItem, Product } from '@/types';
+import { toast } from 'react-toastify';
 
-type PageType = 'home' | 'menu' | 'auth';
+type PageType = 'home' | 'menu' | 'auth' | 'admin';
 type AuthModeType = 'login' | 'register';
 
 interface AppContextProps {
@@ -22,6 +23,7 @@ interface AppContextProps {
   user: User | null;
   token: string | null;
   products: Product[];
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   
   // Actions
   login: (token: string, user: User) => void;
@@ -126,6 +128,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             'Accept': 'application/json'
           }
         });
+        toast.info('Logged out successfully');
       } catch (err) {
         console.error("Logout error", err);
       }
@@ -133,11 +136,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('access_token');
     setToken(null);
     setUser(null);
+    setCurrentPage('home');
   };
 
   // --- Cart Handlers ---
   const handleAddToCart = (productId: string) => {
     setCart((prev) => ({ ...prev, [productId]: 1 }));
+    toast.success('Added to cart!');
   };
 
   const handleIncrement = (productId: string) => {
@@ -189,13 +194,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const data = await response.json();
       if (data.status === 'success') {
+        toast.success('Order confirmed successfully! 🎉');
         setIsModalOpen(true);
       } else {
-        alert('Failed to confirm order: ' + (data.message || 'Unknown error'));
+        toast.error('Failed to confirm order: ' + (data.message || 'Unknown error'));
       }
     } catch (err) {
       console.error(err);
-      alert('Error confirming order');
+      toast.error('Error confirming order');
     }
   };
 
@@ -253,6 +259,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         user,
         token,
         products,
+        setProducts,
         login,
         logout,
         handleAddToCart,

@@ -50,6 +50,7 @@ export default function Navbar() {
               
               {user.role === 'admin' && (
                 <button
+                  onClick={() => setCurrentPage('admin')}
                   className="text-xs font-bold text-white bg-indigo-600 px-3 py-1.5 rounded-full hover:bg-indigo-700 transition-colors"
                 >
                   ⚙️ Admin Dashboard
