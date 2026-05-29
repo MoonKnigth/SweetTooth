@@ -27,7 +27,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   return (
     <div className="flex-1 max-w-6xl w-full mx-auto px-6 py-12 flex flex-col md:flex-row gap-8">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex-shrink-0 self-start">
+      <aside className="w-full md:w-64 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 shrink-0 self-start">
         <h2 className="text-xl font-bold text-foreground mb-6">Account</h2>
         <nav className="flex flex-col space-y-2">
           {navItems.map((item) => {

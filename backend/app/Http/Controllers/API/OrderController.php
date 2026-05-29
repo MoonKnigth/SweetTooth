@@ -69,4 +69,38 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+    public function userOrders(Request $request): JsonResponse
+    {
+        $orders = Order::where('user_id', $request->user()->id)
+            ->with(['items.product'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $orders
+        ]);
+    }
+
+    public function show($id): JsonResponse
+    {
+        $realId = str_replace('ord_', '', $id);
+        
+        $order = Order::with(['items.product'])
+            ->where('id', 'LIKE', $realId . '%')
+            ->first();
+
+        if (!$order) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Order not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $order
+        ]);
+    }
 }
