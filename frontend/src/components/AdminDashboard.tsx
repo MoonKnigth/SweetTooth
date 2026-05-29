@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Product } from '@/types';
 import ProductFormModal from './ProductFormModal';
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/products/${productId}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/products/${productId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -56,8 +56,8 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit }: Pro
 
     try {
       const url = productToEdit 
-        ? `http://localhost:8000/api/admin/products/${productToEdit.id}` 
-        : `http://localhost:8000/api/admin/products`;
+        ? `${process.env.NEXT_PUBLIC_API_URL}/admin/products/${productToEdit.id}` 
+        : `${process.env.NEXT_PUBLIC_API_URL}/admin/products`;
       
       const method = productToEdit ? 'PUT' : 'POST';
 

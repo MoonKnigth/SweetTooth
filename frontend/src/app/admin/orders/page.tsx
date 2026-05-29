@@ -23,7 +23,7 @@ export default function AdminOrdersPage() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/admin/orders', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/orders`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
@@ -48,7 +48,7 @@ export default function AdminOrdersPage() {
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/admin/orders/${orderId}/status`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
