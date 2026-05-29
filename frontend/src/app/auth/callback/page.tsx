@@ -9,7 +9,7 @@ function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { oauthLogin } = useApp();
-  const [isProcessing, setIsProcessing] = useState(true);
+  const [isProcessing] = useState(true);
 
   useEffect(() => {
     const processCallback = async () => {
