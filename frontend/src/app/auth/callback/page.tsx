@@ -11,18 +11,24 @@ function AuthCallbackContent() {
   const { oauthLogin } = useApp();
   const [isProcessing] = useState(true);
 
+  const hasProcessed = React.useRef(false);
+
   useEffect(() => {
+    if (hasProcessed.current) return;
+    
     const processCallback = async () => {
       const token = searchParams.get('token');
       const error = searchParams.get('error');
 
       if (error) {
+        hasProcessed.current = true;
         toast.error('Google login failed or was cancelled.');
         router.push('/login');
         return;
       }
 
       if (token) {
+        hasProcessed.current = true;
         const success = await oauthLogin(token);
         if (success) {
           router.push('/');
@@ -30,6 +36,7 @@ function AuthCallbackContent() {
           router.push('/login');
         }
       } else {
+        hasProcessed.current = true;
         router.push('/login');
       }
     };
