@@ -124,6 +124,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
           secure: process.env.NODE_ENV === 'production', 
           sameSite: 'strict' 
         });
+        if (data.data.refresh_token) {
+          Cookies.set('refresh_token', data.data.refresh_token, { 
+            expires: 30, // 30 วัน
+            secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'strict' 
+          });
+        }
         toast.success('Logged in successfully!');
         return true;
       }
@@ -136,7 +143,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const oauthLogin = async (newToken: string): Promise<boolean> => {
+  const oauthLogin = async (newToken: string, refreshToken: string = ''): Promise<boolean> => {
     try {
       setToken(newToken);
       Cookies.set('access_token', newToken, { 
@@ -213,7 +220,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUser(null);
     Cookies.remove('access_token');
-    toast.info('You have been logged out.');
+    toast.info('Logged out successfully');
   };
 
   // --- Cart Handlers ---

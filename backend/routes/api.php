@@ -14,6 +14,7 @@ use App\Http\Controllers\API\AdminOrderController;
 Route::middleware('throttle:5,1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/refresh', [AuthController::class, 'refreshToken']);
 });
 
 Route::get('/auth/google/redirect', [\App\Http\Controllers\API\SocialAuthController::class, 'redirect']);
@@ -25,12 +26,12 @@ Route::post('/orders', [OrderController::class, 'store']);
 Route::get('/orders/{id}', [OrderController::class, 'show']);
 
 // Protected routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/user/orders', [OrderController::class, 'userOrders']);
 
-    // Admin routes — protected by both auth:sanctum AND admin middleware
+    // Admin routes — protected by both auth:api AND admin middleware
     Route::middleware('admin')->prefix('admin')->group(function () {
         Route::post('/categories', [AdminCategoryController::class, 'store']);
         Route::put('/categories/{id}', [AdminCategoryController::class, 'update']);

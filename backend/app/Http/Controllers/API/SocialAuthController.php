@@ -42,9 +42,11 @@ class SocialAuthController extends Controller
                 ]);
             }
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $token = auth('api')->login($user);
+            $refreshToken = Str::random(60);
+            $user->update(['refresh_token' => hash('sha256', $refreshToken)]);
 
-            return redirect()->away('http://localhost:3001/auth/callback?token=' . $token);
+            return redirect()->away('http://localhost:3001/auth/callback?token=' . $token . '&refreshToken=' . $refreshToken);
         } catch (\Exception $e) {
             Log::error('Google OAuth failed: ' . $e->getMessage());
             return redirect()->away('http://localhost:3001/login?error=oauth_failed');
