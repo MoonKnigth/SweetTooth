@@ -31,6 +31,7 @@ class SocialAuthController extends Controller
                 ->orWhere('provider_id', $googleUser->id)
                 ->first();
 
+            /** @var \App\Models\User $user */
             if (!$user) {
                 $user = User::create([
                     'name' => $googleUser->name,
@@ -42,7 +43,10 @@ class SocialAuthController extends Controller
                 ]);
             }
 
-            $token = auth('api')->login($user);
+            /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+            $guard = auth('api');
+            $token = $guard->login($user);
+            
             $refreshToken = Str::random(60);
             $user->update(['refresh_token' => hash('sha256', $refreshToken)]);
 

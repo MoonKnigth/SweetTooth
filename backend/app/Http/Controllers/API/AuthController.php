@@ -26,7 +26,10 @@ class AuthController extends Controller
             'role' => 'customer',
         ]);
 
-        $token = auth('api')->login($user);
+        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        $guard = auth('api');
+        $token = $guard->login($user);
+        
         $refreshToken = Str::random(60);
         $user->update(['refresh_token' => hash('sha256', $refreshToken)]);
 
@@ -42,14 +45,18 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        if (! $token = auth('api')->attempt($credentials)) {
+        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        $guard = auth('api');
+
+        if (! $token = $guard->attempt($credentials)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid credentials',
             ], 401);
         }
 
-        $user = auth('api')->user();
+        /** @var \App\Models\User $user */
+        $user = $guard->user();
         $refreshToken = Str::random(60);
         $user->update(['refresh_token' => hash('sha256', $refreshToken)]);
 
@@ -62,6 +69,7 @@ class AuthController extends Controller
             'refresh_token' => 'required|string',
         ]);
 
+        /** @var \App\Models\User $user */
         $user = User::where('refresh_token', hash('sha256', $request->refresh_token))->first();
 
         if (!$user) {
@@ -71,7 +79,10 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $token = auth('api')->login($user);
+        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        $guard = auth('api');
+        $token = $guard->login($user);
+        
         $newRefreshToken = Str::random(60);
         $user->update(['refresh_token' => hash('sha256', $newRefreshToken)]);
 
@@ -80,11 +91,16 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        $user = auth('api')->user();
+        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        $guard = auth('api');
+        /** @var \App\Models\User|null $user */
+        $user = $guard->user();
+        
         if ($user) {
             $user->update(['refresh_token' => null]);
         }
-        auth('api')->logout();
+        
+        $guard->logout();
 
         return response()->json([
             'status' => 'success',
@@ -94,14 +110,20 @@ class AuthController extends Controller
 
     public function user(Request $request): JsonResponse
     {
+        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        $guard = auth('api');
+        
         return response()->json([
             'status' => 'success',
-            'data' => auth('api')->user()
+            'data' => $guard->user()
         ]);
     }
 
-    protected function respondWithToken($token, $refreshToken, $user, $message = '', $statusCode = 200): JsonResponse
+    protected function respondWithToken(string $token, string $refreshToken, User $user, string $message = '', int $statusCode = 200): JsonResponse
     {
+        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        $guard = auth('api');
+        
         return response()->json([
             'status' => 'success',
             'message' => $message,
@@ -110,7 +132,7 @@ class AuthController extends Controller
                 'access_token' => $token,
                 'refresh_token' => $refreshToken,
                 'token_type' => 'Bearer',
-                'expires_in' => auth('api')->factory()->getTTL() * 60
+                'expires_in' => $guard->factory()->getTTL() * 60
             ]
         ], $statusCode);
     }

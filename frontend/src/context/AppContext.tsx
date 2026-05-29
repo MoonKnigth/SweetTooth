@@ -21,7 +21,7 @@ interface AppContextProps {
   
   // Actions
   login: (email: string, password: string) => Promise<boolean>;
-  oauthLogin: (token: string) => Promise<boolean>;
+  oauthLogin: (token: string, refreshToken?: string) => Promise<boolean>;
   registerUser: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   handleAddToCart: (productId: string) => void;
@@ -151,6 +151,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         secure: process.env.NODE_ENV === 'production', 
         sameSite: 'strict' 
       });
+      if (refreshToken) {
+        Cookies.set('refresh_token', refreshToken, { 
+          expires: 30,
+          secure: process.env.NODE_ENV === 'production', 
+          sameSite: 'strict' 
+        });
+      }
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
         headers: {
