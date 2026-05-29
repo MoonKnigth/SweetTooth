@@ -4,22 +4,14 @@ import React, { createContext, useContext, useState, useMemo, useEffect, ReactNo
 import { User, CartItem, Product } from '@/types';
 import { toast } from 'react-toastify';
 
-type PageType = 'home' | 'menu' | 'auth' | 'admin';
-type AuthModeType = 'login' | 'register';
 
 interface AppContextProps {
-  currentPage: PageType;
-  setCurrentPage: (page: PageType) => void;
-  authMode: AuthModeType;
-  setAuthMode: (mode: AuthModeType) => void;
   cart: Record<string, number>;
   cartItems: CartItem[];
   totalItemsCount: number;
   totalAmount: number;
   isModalOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
-  isLoginModalOpen: boolean;
-  setIsLoginModalOpen: (isOpen: boolean) => void;
   user: User | null;
   token: string | null;
   products: Product[];
@@ -39,15 +31,11 @@ interface AppContextProps {
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  // Navigation State
-  const [currentPage, setCurrentPage] = useState<PageType>('home');
-  const [authMode, setAuthMode] = useState<AuthModeType>('login');
 
   // App State
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
@@ -111,11 +99,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // --- Auth Handlers ---
-  const login = (newToken: string, loggedInUser: User) => {
-    localStorage.setItem('access_token', newToken);
+  const login = (newToken: string, userData: User) => {
     setToken(newToken);
-    setUser(loggedInUser);
-    setIsLoginModalOpen(false);
+    setUser(userData);
+    localStorage.setItem('access_token', newToken);
   };
 
   const logout = async () => {
@@ -125,18 +112,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-          }
+            'Accept': 'application/json',
+          },
         });
-        toast.info('Logged out successfully');
       } catch (err) {
-        console.error("Logout error", err);
+        console.error('Logout failed:', err);
       }
     }
-    localStorage.removeItem('access_token');
     setToken(null);
     setUser(null);
-    setCurrentPage('home');
+    localStorage.removeItem('access_token');
+    toast.info('You have been logged out.');
   };
 
   // --- Cart Handlers ---
@@ -244,18 +230,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider
       value={{
-        currentPage,
-        setCurrentPage,
-        authMode,
-        setAuthMode,
         cart,
         cartItems,
         totalItemsCount,
         totalAmount,
         isModalOpen,
         setIsModalOpen,
-        isLoginModalOpen,
-        setIsLoginModalOpen,
         user,
         token,
         products,
