@@ -11,7 +11,7 @@ export default function OrderModal() {
     setIsModalOpen,
     cartItems,
     totalAmount,
-    user,
+    lastOrderId,
     handleStartNewOrder,
   } = useApp();
 
@@ -33,6 +33,33 @@ export default function OrderModal() {
             We hope you enjoy your food!
           </p>
         </div>
+
+        {lastOrderId && (
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-6 text-center animate-in slide-in-from-bottom-2">
+            <p className="text-sm text-gray-500 mb-1">Your Order ID for Tracking:</p>
+            <div className="flex items-center justify-center gap-3">
+              <span className="font-mono font-bold text-lg text-gray-900 tracking-wider bg-white px-3 py-1 rounded-md border border-gray-200">
+                {lastOrderId}
+              </span>
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(lastOrderId);
+                }}
+                className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300 transition-colors"
+              >
+                Copy
+              </button>
+            </div>
+            <a 
+              href={`/track?id=${lastOrderId}`}
+              onClick={() => setIsModalOpen(false)}
+              className="inline-block mt-4 text-[#c73b0f] text-sm font-semibold hover:underline"
+            >
+              Track Order Status &rarr;
+            </a>
+          </div>
+        )}
+
         <div className="bg-background rounded-xl p-6 mb-8 border border-gray-100">
           <div className="max-h-48 overflow-y-auto mb-4 pr-2">
             {cartItems.map((item) => (

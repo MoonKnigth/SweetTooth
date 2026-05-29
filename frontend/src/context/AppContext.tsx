@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useMemo, useEffect, ReactNode } from 'react';
 import { User, CartItem, Product } from '@/types';
 import { toast } from 'react-toastify';
+import Cookies from 'js-cookie';
 
 
 interface AppContextProps {
@@ -12,13 +13,15 @@ interface AppContextProps {
   totalAmount: number;
   isModalOpen: boolean;
   setIsModalOpen: (isOpen: boolean) => void;
+  lastOrderId: string | null;
   user: User | null;
   token: string | null;
   products: Product[];
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   
   // Actions
-  login: (token: string, user: User) => void;
+  login: (email: string, password: string) => Promise<boolean>;
+  registerUser: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   handleAddToCart: (productId: string) => void;
   handleIncrement: (productId: string) => void;
@@ -36,15 +39,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<Record<string, number>>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [lastOrderId, setLastOrderId] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
   // Auto Login
   useEffect(() => {
-    const savedToken = localStorage.getItem('access_token');
+    // 🔒 อ่าน Token จาก Cookie แทน localStorage เพื่อความปลอดภัยจากบางช่องทาง
+    const savedToken = Cookies.get('access_token');
+    
     if (savedToken) {
       setTimeout(() => setToken(savedToken), 0);
-      fetch('http://localhost:8000/api/user', {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
         headers: {
           'Authorization': `Bearer ${savedToken}`,
           'Accept': 'application/json'
@@ -55,13 +61,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         throw new Error('Unauthorized');
       })
       .then(data => {
-        if (data && data.id) {
-          setUser(data);
+        if (data && data.data) {
+          setUser(data.data);
         }
       })
       .catch(() => {
         // Invalid token
-        localStorage.removeItem('access_token');
+        Cookies.remove('access_token');
         setToken(null);
         setUser(null);
       });
@@ -70,7 +76,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Fetch Products
   useEffect(() => {
-    fetch('http://localhost:8000/api/products')
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`)
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
@@ -99,16 +105,69 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // --- Auth Handlers ---
-  const login = (newToken: string, userData: User) => {
-    setToken(newToken);
-    setUser(userData);
-    localStorage.setItem('access_token', newToken);
+  const login = async (email: string, password: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      
+      if (data.status === 'success' && data.data) {
+        setToken(data.data.access_token);
+        setUser(data.data.user);
+        // 🔒 บันทึก Cookie แบบ Secure และ SameSite ป้องกัน CSRF
+        Cookies.set('access_token', data.data.access_token, { 
+          expires: 7, // 7 วัน
+          secure: process.env.NODE_ENV === 'production', 
+          sameSite: 'strict' 
+        });
+        toast.success('Logged in successfully!');
+        return true;
+      }
+      toast.error(data.message || 'Invalid credentials');
+      return false;
+    } catch (err) {
+      console.error(err);
+      toast.error('Connection error');
+      return false;
+    }
+  };
+
+  const registerUser = async (name: string, email: string, password: string): Promise<boolean> => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      const data = await res.json();
+      
+      if (data.status === 'success' && data.data) {
+        setToken(data.data.access_token);
+        setUser(data.data.user);
+        Cookies.set('access_token', data.data.access_token, { 
+          expires: 7, 
+          secure: process.env.NODE_ENV === 'production', 
+          sameSite: 'strict' 
+        });
+        toast.success('Registered successfully!');
+        return true;
+      }
+      toast.error(data.message || 'Registration failed');
+      return false;
+    } catch (err) {
+      console.error(err);
+      toast.error('Connection error');
+      return false;
+    }
   };
 
   const logout = async () => {
     if (token) {
       try {
-        await fetch('http://localhost:8000/api/logout', {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -121,7 +180,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     setToken(null);
     setUser(null);
-    localStorage.removeItem('access_token');
+    Cookies.remove('access_token');
     toast.info('You have been logged out.');
   };
 
@@ -172,7 +231,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const response = await fetch('http://localhost:8000/api/orders', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ items, user_id: user ? user.id : null })
@@ -181,6 +240,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
       if (data.status === 'success') {
         toast.success('Order confirmed successfully! 🎉');
+        if (data.data && data.data.orderId) {
+          setLastOrderId(data.data.orderId);
+        }
         setIsModalOpen(true);
       } else {
         toast.error('Failed to confirm order: ' + (data.message || 'Unknown error'));
@@ -194,6 +256,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const handleStartNewOrder = () => {
     setCart({});
     setIsModalOpen(false);
+    setLastOrderId(null);
   };
 
   // --- Derived State ---
@@ -236,11 +299,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         totalAmount,
         isModalOpen,
         setIsModalOpen,
+        lastOrderId,
         user,
         token,
         products,
         setProducts,
         login,
+        registerUser,
         logout,
         handleAddToCart,
         handleIncrement,
