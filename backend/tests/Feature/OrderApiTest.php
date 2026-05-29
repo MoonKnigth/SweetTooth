@@ -23,7 +23,6 @@ class OrderApiTest extends TestCase
         ]);
 
         $response = $this->postJson('/api/orders', [
-            'user_id' => null,
             'items' => [
                 [
                     'product_id' => $product->id,
@@ -59,8 +58,7 @@ class OrderApiTest extends TestCase
             'isActive' => true
         ]);
 
-        $response = $this->postJson('/api/orders', [
-            'user_id' => $user->id,
+        $response = $this->actingAs($user)->postJson('/api/orders', [
             'items' => [
                 [
                     'product_id' => $product->id,

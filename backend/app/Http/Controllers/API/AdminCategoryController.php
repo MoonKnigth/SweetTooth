@@ -12,9 +12,6 @@ class AdminCategoryController extends Controller
 {
     public function store(Request $request): JsonResponse
     {
-        if ($request->user()->role !== 'admin') {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized. Admin access required.'], 403);
-        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
@@ -33,9 +30,6 @@ class AdminCategoryController extends Controller
 
     public function update(Request $request, string $id): JsonResponse
     {
-        if ($request->user()->role !== 'admin') {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized. Admin access required.'], 403);
-        }
 
         $category = Category::find($id);
         if (!$category) {
@@ -59,9 +53,6 @@ class AdminCategoryController extends Controller
 
     public function destroy(Request $request, string $id): JsonResponse
     {
-        if ($request->user()->role !== 'admin') {
-            return response()->json(['status' => 'error', 'message' => 'Unauthorized. Admin access required.'], 403);
-        }
 
         $category = Category::find($id);
         if (!$category) {

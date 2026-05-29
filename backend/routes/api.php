@@ -8,10 +8,13 @@ use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\AdminProductController;
 use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\AdminCategoryController;
+use App\Http\Controllers\API\AdminOrderController;
 
 // Public routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('throttle:5,1')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
@@ -24,15 +27,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/user/orders', [OrderController::class, 'userOrders']);
 
-    // Admin routes
-    Route::post('/admin/categories', [AdminCategoryController::class, 'store']);
-    Route::put('/admin/categories/{id}', [AdminCategoryController::class, 'update']);
-    Route::delete('/admin/categories/{id}', [AdminCategoryController::class, 'destroy']);
+    // Admin routes — protected by both auth:sanctum AND admin middleware
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::post('/categories', [AdminCategoryController::class, 'store']);
+        Route::put('/categories/{id}', [AdminCategoryController::class, 'update']);
+        Route::delete('/categories/{id}', [AdminCategoryController::class, 'destroy']);
 
-    Route::post('/admin/products', [AdminProductController::class, 'store']);
-    Route::put('/admin/products/{id}', [AdminProductController::class, 'update']);
-    Route::delete('/admin/products/{id}', [AdminProductController::class, 'destroy']);
-    
-    Route::get('/admin/orders', [\App\Http\Controllers\API\AdminOrderController::class, 'index']);
-    Route::put('/admin/orders/{id}/status', [\App\Http\Controllers\API\AdminOrderController::class, 'updateStatus']);
+        Route::post('/products', [AdminProductController::class, 'store']);
+        Route::put('/products/{id}', [AdminProductController::class, 'update']);
+        Route::delete('/products/{id}', [AdminProductController::class, 'destroy']);
+
+        Route::get('/orders', [AdminOrderController::class, 'index']);
+        Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+    });
 });

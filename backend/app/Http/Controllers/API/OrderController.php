@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
@@ -39,7 +40,7 @@ class OrderController extends Controller
             }
 
             $order = Order::create([
-                'user_id' => $request->user_id ?? null,
+                'user_id' => $request->user()?->id,
                 'total_price' => $totalPrice,
                 'status' => 'pending'
             ]);
@@ -63,9 +64,10 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Order creation failed: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Something went wrong: ' . $e->getMessage()
+                'message' => 'Something went wrong, please try again later.'
             ], 500);
         }
     }
@@ -85,7 +87,14 @@ class OrderController extends Controller
 
     public function show($id): JsonResponse
     {
-        $realId = str_replace('ord_', '', $id);
+        $realId = str_replace(['ord_', '%', '_'], '', $id);
+
+        if (strlen($realId) < 8) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid order ID format'
+            ], 400);
+        }
         
         $order = Order::with(['items.product'])
             ->where('id', 'LIKE', $realId . '%')

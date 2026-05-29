@@ -234,7 +234,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ items, user_id: user ? user.id : null })
+        body: JSON.stringify({ items })
       });
 
       const data = await response.json();
