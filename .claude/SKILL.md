@@ -12,6 +12,7 @@
 - **Authentication:** ใช้ Laravel Sanctum ในการทำ API Token Auth
 
 ## 3. Git & Version Control
+- **ไม่ต้องทำการ Commit โค้ดทุกครั้งที่ทำงานเสร็จ** ให้ทำการ Commit เฉพาะเมื่อผู้ใช้สั่งให้ทำเท่านั้น
 - เมื่อสั่ง Commit โค้ด บังคับใช้รูปแบบ **Conventional Commits** เสมอ เช่น:
   - `feat: add shopping cart component`
   - `fix: resolve hydration error on modal`
