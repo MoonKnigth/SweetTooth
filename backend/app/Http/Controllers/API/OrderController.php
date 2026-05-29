@@ -40,7 +40,7 @@ class OrderController extends Controller
             }
 
             $order = Order::create([
-                'user_id' => $request->user()?->id,
+                'user_id' => auth('sanctum')->user()?->id,
                 'total_price' => $totalPrice,
                 'status' => 'pending'
             ]);
@@ -85,7 +85,7 @@ class OrderController extends Controller
         ]);
     }
 
-    public function show($id): JsonResponse
+    public function show(string $id): JsonResponse
     {
         $realId = str_replace(['ord_', '%', '_'], '', $id);
 
