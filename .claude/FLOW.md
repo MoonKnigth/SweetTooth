@@ -94,3 +94,9 @@ flowchart TD
 - [x] สร้างระบบจัดการหมวดหมู่สินค้า (Admin Categories).
 - [x] สร้างระบบดูประวัติคำสั่งซื้อ (Order History) สำหรับ User ที่ Login แล้ว.
 - [x] สร้างระบบติดตามสถานะ Guest Tracking.
+
+## 📌 Phase 5: Security Hardening & Social Login (✅ เสร็จสิ้น)
+- [x] สแกนระบบและทำ Security Audit Report.
+- [x] อุดช่องโหว่ (Security Hardening) ตามผลรายงาน.
+- [x] ตั้งค่า Google Cloud Console (Client ID & Client Secret).
+- [x] เชื่อมต่อระบบ Google OAuth ด้วย Laravel Socialite และ Next.js.
