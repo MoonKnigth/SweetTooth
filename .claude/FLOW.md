@@ -100,3 +100,4 @@ flowchart TD
 - [x] อุดช่องโหว่ (Security Hardening) ตามผลรายงาน.
 - [x] ตั้งค่า Google Cloud Console (Client ID & Client Secret).
 - [x] เชื่อมต่อระบบ Google OAuth ด้วย Laravel Socialite และ Next.js.
+- [ ] test report

@@ -24,11 +24,12 @@ class SocialAuthController extends Controller
         try {
             /** @var \Laravel\Socialite\Two\GoogleProvider $driver */
             $driver = Socialite::driver('google');
+            /** @var \Laravel\Socialite\Two\User $googleUser */
             $googleUser = $driver->stateless()->user();
 
             $user = User::where('email', $googleUser->email)
-                        ->orWhere('provider_id', $googleUser->id)
-                        ->first();
+                ->orWhere('provider_id', $googleUser->id)
+                ->first();
 
             if (!$user) {
                 $user = User::create([
@@ -43,11 +44,10 @@ class SocialAuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return redirect()->away('http://localhost:3000/auth/callback?token=' . $token);
-
+            return redirect()->away('http://localhost:3001/auth/callback?token=' . $token);
         } catch (\Exception $e) {
-            \Log::error('Google OAuth failed: ' . $e->getMessage());
-            return redirect()->away('http://localhost:3000/login?error=oauth_failed');
+            Log::error('Google OAuth failed: ' . $e->getMessage());
+            return redirect()->away('http://localhost:3001/login?error=oauth_failed');
         }
     }
 }

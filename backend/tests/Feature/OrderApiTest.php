@@ -49,6 +49,7 @@ class OrderApiTest extends TestCase
     
     public function test_user_can_create_order()
     {
+        /** @var User $user */
         $user = User::factory()->create();
         $category = Category::create(['name' => 'Dessert', 'slug' => 'dessert']);
         $product = Product::create([
