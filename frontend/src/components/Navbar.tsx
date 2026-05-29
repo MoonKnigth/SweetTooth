@@ -25,7 +25,7 @@ export default function Navbar() {
             className={`font-semibold transition-colors ${
               pathname === '/menu'
                 ? 'text-[#c73b0f]'
-                : 'text-[#87635a] hover:text-[#260f08]'
+                : 'text-[#87635a] hover:text-foreground'
             }`}
           >
             Menu
@@ -45,10 +45,10 @@ export default function Navbar() {
           </Link>
 
           {user ? (
-            <div className="flex items-center gap-4 bg-[#fcf8f6] py-2 px-4 rounded-full border border-gray-100">
+            <div className="flex items-center gap-4 bg-background py-2 px-4 rounded-full border border-gray-100">
               <Link href="/profile" className="flex items-center gap-2 hover:opacity-80">
                 <User className="w-5 h-5 text-[#87635a]" />
-                <span className="text-sm font-semibold text-[#260f08]">👋 สวัสดี, {user.name}</span>
+                <span className="text-sm font-semibold text-foreground">👋 สวัสดี, {user.name}</span>
               </Link>
               
               {user.role === 'admin' && (

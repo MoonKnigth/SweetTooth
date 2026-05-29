@@ -32,7 +32,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {quantity === 0 ? (
             <button
               onClick={() => handleAddToCart(product.id)}
-              className="w-full h-full bg-white border border-gray-300 rounded-full flex items-center justify-center gap-2 font-semibold text-[#260f08] hover:border-[#c73b0f] hover:text-[#c73b0f] transition-all shadow-sm"
+              className="w-full h-full bg-white border border-gray-300 rounded-full flex items-center justify-center gap-2 font-semibold text-foreground hover:border-[#c73b0f] hover:text-[#c73b0f] transition-all shadow-sm"
             >
               <ShoppingCart className="w-5 h-5 text-[#c73b0f]" /> Add to Cart
             </button>

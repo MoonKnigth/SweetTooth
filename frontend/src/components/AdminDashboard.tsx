@@ -59,7 +59,7 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 w-full animate-in fade-in duration-500">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-[#260f08]">⚙️ Admin Dashboard (Manage Menu)</h1>
+        <h1 className="text-3xl font-bold text-foreground">⚙️ Admin Dashboard (Manage Menu)</h1>
         <button
           onClick={handleAddNew}
           className="bg-indigo-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors shadow"
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
                     }}
                   />
                 </td>
-                <td className="p-4 font-semibold text-[#260f08]">{product.name}</td>
+                <td className="p-4 font-semibold text-foreground">{product.name}</td>
                 <td className="p-4 text-gray-600">{product.categoryName || 'Unknown'}</td>
                 <td className="p-4 text-gray-600">${product.price.toFixed(2)}</td>
                 <td className="p-4">

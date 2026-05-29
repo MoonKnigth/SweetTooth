@@ -7,7 +7,7 @@ export default function Home() {
       {/* Hero Section */}
       <div className="w-full max-w-6xl mx-auto px-6 py-20 md:py-32 flex flex-col md:flex-row items-center gap-12">
         <div className="flex-1 space-y-6 text-center md:text-left">
-          <h1 className="text-5xl md:text-7xl font-bold text-[#260f08] leading-tight">
+          <h1 className="text-5xl md:text-7xl font-bold text-foreground leading-tight">
             Sweet Delights, <br />
             <span className="text-[#c73b0f]">Delivered Daily.</span>
           </h1>
@@ -35,21 +35,21 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <div className="w-full bg-[#fcf8f6] py-16">
+      <div className="w-full bg-background py-16">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white p-8 rounded-2xl shadow-sm text-center">
             <div className="text-4xl mb-4">🥐</div>
-            <h3 className="text-xl font-bold text-[#260f08] mb-2">Freshly Baked</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">Freshly Baked</h3>
             <p className="text-[#87635a]">Our pastries are baked fresh every single morning.</p>
           </div>
           <div className="bg-white p-8 rounded-2xl shadow-sm text-center">
             <div className="text-4xl mb-4">🚚</div>
-            <h3 className="text-xl font-bold text-[#260f08] mb-2">Fast Delivery</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">Fast Delivery</h3>
             <p className="text-[#87635a]">Get your favorite desserts delivered right to your door.</p>
           </div>
           <div className="bg-white p-8 rounded-2xl shadow-sm text-center">
             <div className="text-4xl mb-4">✨</div>
-            <h3 className="text-xl font-bold text-[#260f08] mb-2">Premium Quality</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">Premium Quality</h3>
             <p className="text-[#87635a]">We use only the finest ingredients for the best taste.</p>
           </div>
         </div>

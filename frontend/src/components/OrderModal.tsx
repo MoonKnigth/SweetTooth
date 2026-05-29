@@ -28,12 +28,12 @@ export default function OrderModal() {
       <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in-95">
         <CheckCircle className="w-16 h-16 text-green-500 mb-6 mx-auto" />
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-[#260f08] mb-2">Order Confirmed</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-2">Order Confirmed</h2>
           <p className="text-[#87635a]">
             We hope you enjoy your food!
           </p>
         </div>
-        <div className="bg-[#fcf8f6] rounded-xl p-6 mb-8 border border-gray-100">
+        <div className="bg-background rounded-xl p-6 mb-8 border border-gray-100">
           <div className="max-h-48 overflow-y-auto mb-4 pr-2">
             {cartItems.map((item) => (
               <div
@@ -48,7 +48,7 @@ export default function OrderModal() {
                   className="w-12 h-12 rounded-lg object-cover"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[#260f08] text-sm truncate">
+                  <p className="font-semibold text-foreground text-sm truncate">
                     {item.name}
                   </p>
                   <div className="flex items-center gap-2 text-sm mt-1">
@@ -60,15 +60,15 @@ export default function OrderModal() {
                     </span>
                   </div>
                 </div>
-                <div className="font-semibold text-[#260f08]">
+                <div className="font-semibold text-foreground">
                   ${(item.price * item.quantity).toFixed(2)}
                 </div>
               </div>
             ))}
           </div>
           <div className="pt-4 border-t border-gray-200/50 flex items-center justify-between">
-            <span className="text-[#260f08] text-sm">Order Total</span>
-            <span className="text-2xl font-bold text-[#260f08]">
+            <span className="text-foreground text-sm">Order Total</span>
+            <span className="text-2xl font-bold text-foreground">
               ${totalAmount.toFixed(2)}
             </span>
           </div>

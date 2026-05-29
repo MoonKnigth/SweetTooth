@@ -21,10 +21,6 @@ export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (token) fetchOrders();
-  }, [token]);
-
   const fetchOrders = async () => {
     try {
       const res = await fetch('http://localhost:8000/api/admin/orders', {
@@ -45,6 +41,11 @@ export default function AdminOrdersPage() {
     }
   };
 
+  useEffect(() => {
+    if (token) fetchOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       const res = await fetch(`http://localhost:8000/api/admin/orders/${orderId}/status`, {
@@ -60,7 +61,7 @@ export default function AdminOrdersPage() {
       
       if (res.ok && data.status === 'success') {
         toast.success(`Order status updated to ${newStatus}`);
-        setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus as any } : o));
+        setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus as Order['status'] } : o));
       } else {
         toast.error(data.message || 'Failed to update status');
       }
@@ -85,7 +86,7 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-[#260f08]">Order Management</h1>
+      <h1 className="text-3xl font-bold text-foreground">Order Management</h1>
       <p className="text-[#87635a]">Manage customer orders and update their statuses.</p>
       
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-8">

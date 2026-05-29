@@ -22,17 +22,21 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit }: Pro
 
   useEffect(() => {
     if (productToEdit) {
-      setName(productToEdit.name);
-      setCategoryId(productToEdit.categoryId.toString());
-      setPrice(productToEdit.price.toString());
-      setImageUrl(productToEdit.imageUrl);
-      setIsActive(productToEdit.isActive);
+      setTimeout(() => {
+        setName(productToEdit.name);
+        setCategoryId(productToEdit.categoryId.toString());
+        setPrice(productToEdit.price.toString());
+        setImageUrl(productToEdit.imageUrl);
+        setIsActive(productToEdit.isActive);
+      }, 0);
     } else {
-      setName('');
-      setCategoryId('1');
-      setPrice('');
-      setImageUrl('');
-      setIsActive(true);
+      setTimeout(() => {
+        setName('');
+        setCategoryId('1');
+        setPrice('');
+        setImageUrl('');
+        setIsActive(true);
+      }, 0);
     }
   }, [productToEdit, isOpen]);
 
@@ -107,7 +111,7 @@ export default function ProductFormModal({ isOpen, onClose, productToEdit }: Pro
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
       <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">✕</button>
-        <h2 className="text-2xl font-bold text-[#260f08] mb-6">
+        <h2 className="text-2xl font-bold text-foreground mb-6">
           {productToEdit ? 'Edit Menu' : 'Add New Menu'}
         </h2>
         

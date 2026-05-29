@@ -43,7 +43,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedToken = localStorage.getItem('access_token');
     if (savedToken) {
-      setToken(savedToken);
+      setTimeout(() => setToken(savedToken), 0);
       fetch('http://localhost:8000/api/user', {
         headers: {
           'Authorization': `Bearer ${savedToken}`,

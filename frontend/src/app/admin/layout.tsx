@@ -29,10 +29,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="flex-1 flex bg-[#fcf8f6]">
+    <div className="flex-1 flex bg-background">
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-200 py-8 px-4 flex flex-col min-h-[calc(100vh-80px)]">
-        <h2 className="text-xl font-bold text-[#260f08] mb-6 px-4">Admin Panel</h2>
+        <h2 className="text-xl font-bold text-foreground mb-6 px-4">Admin Panel</h2>
         <nav className="flex-1 space-y-1">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
@@ -43,7 +43,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 className={`group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
                   isActive
                     ? 'bg-[#c73b0f] text-white'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-[#260f08]'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-foreground'
                 }`}
               >
                 {item.name}

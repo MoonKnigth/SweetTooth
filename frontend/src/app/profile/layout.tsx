@@ -28,7 +28,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
     <div className="flex-1 max-w-6xl w-full mx-auto px-6 py-12 flex flex-col md:flex-row gap-8">
       {/* Sidebar */}
       <aside className="w-full md:w-64 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex-shrink-0 self-start">
-        <h2 className="text-xl font-bold text-[#260f08] mb-6">Account</h2>
+        <h2 className="text-xl font-bold text-foreground mb-6">Account</h2>
         <nav className="flex flex-col space-y-2">
           {navItems.map((item) => {
             const isActive = pathname === item.path;
@@ -38,8 +38,8 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                 href={item.path}
                 className={`px-4 py-3 text-sm font-medium rounded-xl transition-colors ${
                   isActive
-                    ? 'bg-[#fcf8f6] text-[#c73b0f] font-semibold'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-[#260f08]'
+                    ? 'bg-background text-[#c73b0f] font-semibold'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-foreground'
                 }`}
               >
                 {item.name}
