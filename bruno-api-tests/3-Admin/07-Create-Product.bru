@@ -7,6 +7,9 @@ post {
   url: {{base_url}}/api/admin/products
   body: json
   auth: bearer
+headers {
+  Accept: application/json
+}
 }
 auth:bearer {
   token: {{token}}

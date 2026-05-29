@@ -7,6 +7,9 @@ post {
   url: {{base_url}}/api/register
   body: json
   auth: none
+headers {
+  Accept: application/json
+}
 }
 script:pre-request {
   const randomNum = Math.floor(Math.random() * 100000);

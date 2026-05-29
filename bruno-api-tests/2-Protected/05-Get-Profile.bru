@@ -7,6 +7,9 @@ get {
   url: {{base_url}}/api/user
   body: none
   auth: bearer
+headers {
+  Accept: application/json
+}
 }
 auth:bearer {
   token: {{token}}

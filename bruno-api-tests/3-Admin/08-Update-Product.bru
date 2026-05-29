@@ -7,6 +7,9 @@ put {
   url: {{base_url}}/api/admin/products/{{test_product_id}}
   body: json
   auth: bearer
+headers {
+  Accept: application/json
+}
 }
 auth:bearer {
   token: {{token}}

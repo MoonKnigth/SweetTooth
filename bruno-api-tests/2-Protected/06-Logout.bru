@@ -7,6 +7,9 @@ post {
   url: {{base_url}}/api/logout
   body: none
   auth: bearer
+headers {
+  Accept: application/json
+}
 }
 auth:bearer {
   token: {{token}}

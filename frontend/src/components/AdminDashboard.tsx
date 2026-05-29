@@ -120,7 +120,7 @@ export default function AdminDashboard() {
             {products.length === 0 && (
               <tr>
                 <td colSpan={6} className="p-8 text-center text-gray-500">
-                  No products found. Click "Add New Menu" to create one.
+                  No products found. Click &quot;Add New Menu&quot; to create one.
                 </td>
               </tr>
             )}
