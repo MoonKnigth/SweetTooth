@@ -1,3 +1,4 @@
+<!-- SOUL.md -->
 # AI SOUL & Persona
 
 ## 1. Core Identity
