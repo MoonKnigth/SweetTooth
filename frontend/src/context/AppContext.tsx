@@ -21,6 +21,7 @@ interface AppContextProps {
   
   // Actions
   login: (email: string, password: string) => Promise<boolean>;
+  oauthLogin: (token: string) => Promise<boolean>;
   registerUser: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   handleAddToCart: (productId: string) => void;
@@ -127,6 +128,37 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return true;
       }
       toast.error(data.message || 'Invalid credentials');
+      return false;
+    } catch (err) {
+      console.error(err);
+      toast.error('Connection error');
+      return false;
+    }
+  };
+
+  const oauthLogin = async (newToken: string): Promise<boolean> => {
+    try {
+      setToken(newToken);
+      Cookies.set('access_token', newToken, { 
+        expires: 7, 
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'strict' 
+      });
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+        headers: {
+          'Authorization': `Bearer ${newToken}`,
+          'Accept': 'application/json'
+        }
+      });
+      const data = await res.json();
+      
+      if (res.ok && data && data.data) {
+        setUser(data.data);
+        toast.success('Logged in with Google successfully!');
+        return true;
+      }
+      toast.error('Failed to fetch user profile');
       return false;
     } catch (err) {
       console.error(err);
@@ -305,6 +337,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         products,
         setProducts,
         login,
+        oauthLogin,
         registerUser,
         logout,
         handleAddToCart,
