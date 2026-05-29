@@ -1,5 +1,5 @@
 meta {
-  name: 02. Login (Auto Save Token)
+  name: 02. Login (Admin)
   type: http
   seq: 2
 }
@@ -17,6 +17,13 @@ body:json {
 script:post-response {
   if (res.status === 200 && res.body.data && res.body.data.access_token) {
     bru.setEnvVar("token", res.body.data.access_token);
-    console.log("🔥 Token Saved to Environment!");
   }
+}
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("Has access token", function() {
+    expect(res.body.data.access_token).to.be.a('string');
+  });
 }

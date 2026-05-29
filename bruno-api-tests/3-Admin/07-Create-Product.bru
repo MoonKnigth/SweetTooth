@@ -1,7 +1,7 @@
 meta {
-  name: 07. Create Product
+  name: 06. Create Product (Admin)
   type: http
-  seq: 1
+  seq: 6
 }
 post {
   url: {{base_url}}/api/admin/products
@@ -13,10 +13,24 @@ auth:bearer {
 }
 body:json {
   {
-    "name": "New Chocolate Cake",
+    "name": "E2E Test Product",
     "category_id": 1,
-    "price": 12.50,
-    "image_thumbnail": "https://images.unsplash.com/photo-1578985545062-69928b1d9587",
+    "price": 9.99,
+    "image_thumbnail": "https://via.placeholder.com/150",
     "isActive": true
   }
+}
+script:post-response {
+  if (res.status === 201 && res.body.data) {
+    bru.setEnvVar("test_product_id", res.body.data.id);
+  }
+}
+tests {
+  test("Status is 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("Product created successfully", function() {
+    expect(res.body.status).to.equal("success");
+    expect(res.body.data.name).to.equal("E2E Test Product");
+  });
 }

@@ -6,16 +6,27 @@ meta {
 post {
   url: {{base_url}}/api/orders
   body: json
-  auth: none
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
 }
 body:json {
   {
-    "user_id": null,
     "items": [
       {
-        "product_id": "REPLACE_WITH_PRODUCT_UUID",
+        "product_id": "{{first_product_id}}",
         "quantity": 2
       }
     ]
   }
+}
+tests {
+  test("Status is 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("Order is created", function() {
+    expect(res.body.status).to.equal("success");
+    expect(res.body.data.order_id).to.be.a('string');
+  });
 }

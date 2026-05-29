@@ -1,13 +1,21 @@
 meta {
-  name: 09. Delete Product
+  name: 08. Delete Product (Admin)
   type: http
-  seq: 3
+  seq: 8
 }
 delete {
-  url: {{base_url}}/api/admin/products/{{product_id}}
+  url: {{base_url}}/api/admin/products/{{test_product_id}}
   body: none
   auth: bearer
 }
 auth:bearer {
   token: {{token}}
+}
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("Product deleted successfully", function() {
+    expect(res.body.status).to.equal("success");
+  });
 }

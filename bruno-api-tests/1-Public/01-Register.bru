@@ -8,10 +8,19 @@ post {
   body: json
   auth: none
 }
-body:json {
-  {
-    "name": "New Customer",
-    "email": "customer@example.com",
+script:pre-request {
+  const randomNum = Math.floor(Math.random() * 100000);
+  req.setBody({
+    "name": "E2E User " + randomNum,
+    "email": "e2e" + randomNum + "@example.com",
     "password": "password"
-  }
+  });
+}
+tests {
+  test("Status is 201 Created or 200 OK", function() {
+    expect([200, 201]).to.include(res.status);
+  });
+  test("Response has success status", function() {
+    expect(res.body.status).to.equal("success");
+  });
 }

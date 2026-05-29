@@ -1,7 +1,7 @@
 meta {
-  name: 06. Logout
+  name: 09. Logout
   type: http
-  seq: 2
+  seq: 9
 }
 post {
   url: {{base_url}}/api/logout
@@ -10,4 +10,17 @@ post {
 }
 auth:bearer {
   token: {{token}}
+}
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("Logged out successfully", function() {
+    expect(res.body.status).to.equal("success");
+  });
+}
+script:post-response {
+  bru.setEnvVar("token", "");
+  bru.setEnvVar("test_product_id", "");
+  bru.setEnvVar("first_product_id", "");
 }

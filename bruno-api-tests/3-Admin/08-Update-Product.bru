@@ -1,10 +1,10 @@
 meta {
-  name: 08. Update Product
+  name: 07. Update Product (Admin)
   type: http
-  seq: 2
+  seq: 7
 }
 put {
-  url: {{base_url}}/api/admin/products/{{product_id}}
+  url: {{base_url}}/api/admin/products/{{test_product_id}}
   body: json
   auth: bearer
 }
@@ -13,6 +13,20 @@ auth:bearer {
 }
 body:json {
   {
-    "price": 15.00
+    "name": "E2E Test Product Updated",
+    "category_id": 1,
+    "price": 19.99,
+    "image_thumbnail": "https://via.placeholder.com/150",
+    "isActive": false
   }
+}
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("Product updated successfully", function() {
+    expect(res.body.status).to.equal("success");
+    expect(res.body.data.name).to.equal("E2E Test Product Updated");
+    expect(res.body.data.price).to.equal("19.99");
+  });
 }
