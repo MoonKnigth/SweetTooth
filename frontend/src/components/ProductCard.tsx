@@ -26,6 +26,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             className={`w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105 ${
               quantity > 0 ? 'border-2 border-[#c73b0f]' : ''
             }`}
+            priority
           />
         </div>
         <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-40 h-11 z-10">

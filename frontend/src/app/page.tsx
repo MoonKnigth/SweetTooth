@@ -25,9 +25,10 @@ export default function Home() {
         </div>
         <div className="flex-1 w-full relative h-[400px] md:h-[600px] rounded-3xl overflow-hidden shadow-2xl">
           <Image 
-            src="https://images.unsplash.com/photo-1551024506-0cb9842cb9af?q=80&w=1000&auto=format&fit=crop" 
+            src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1000&auto=format&fit=crop" 
             alt="Delicious desserts" 
             fill 
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover"
             priority
           />
