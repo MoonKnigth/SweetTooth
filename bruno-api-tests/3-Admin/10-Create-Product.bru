@@ -1,15 +1,15 @@
 meta {
-  name: 06. Create Product (Admin)
+  name: 10. Create Product
   type: http
-  seq: 6
+  seq: 10
 }
 post {
   url: {{base_url}}/api/admin/products
   body: json
   auth: bearer
+}
 headers {
   Accept: application/json
-}
 }
 auth:bearer {
   token: {{token}}
