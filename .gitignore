@@ -28,3 +28,12 @@ Thumbs.db
 .idea/
 .vscode/
 .cursor/
+# 🚫 ไฟล์ Database Local (ถ้าใช้ SQLite ทดสอบ)
+backend/database/database.sqlite
+backend/database/database.sqlite-journal
+
+# 🚫 Package Manager Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
