@@ -24,6 +24,11 @@ body:json {
     ]
   }
 }
+script:post-response {
+  if (res.status === 200 && res.body.data && res.body.data.orderId) {
+    bru.setEnvVar("order_id", res.body.data.orderId);
+  }
+}
 tests {
   test("Status is 200", function() {
     expect(res.status).to.equal(200);
