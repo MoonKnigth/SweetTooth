@@ -16,6 +16,9 @@ Route::middleware('throttle:5,1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
+Route::get('/auth/google/redirect', [\App\Http\Controllers\API\SocialAuthController::class, 'redirect']);
+Route::get('/auth/google/callback', [\App\Http\Controllers\API\SocialAuthController::class, 'callback']);
+
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/orders', [OrderController::class, 'store']);
