@@ -1,0 +1,21 @@
+meta {
+  name: 05. Get Categories
+  type: http
+  seq: 5
+}
+get {
+  url: {{base_url}}/api/categories
+  body: none
+  auth: none
+}
+headers {
+  Accept: application/json
+}
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("Returns success", function() {
+    expect(res.body.status).to.equal('success');
+  });
+}

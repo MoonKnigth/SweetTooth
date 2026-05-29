@@ -1,0 +1,27 @@
+meta {
+  name: 11. Update Category
+  type: http
+  seq: 11
+}
+put {
+  url: {{base_url}}/api/admin/categories/{{test_category_id}}
+  body: json
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+headers {
+  Accept: application/json
+}
+body:json {
+  {
+    "name": "Updated Tasty Category",
+    "slug": "updated-tasty-category"
+  }
+}
+tests {
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

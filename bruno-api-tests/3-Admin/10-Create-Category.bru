@@ -1,0 +1,33 @@
+meta {
+  name: 10. Create Category
+  type: http
+  seq: 10
+}
+post {
+  url: {{base_url}}/api/admin/categories
+  body: json
+  auth: bearer
+}
+auth:bearer {
+  token: {{token}}
+}
+headers {
+  Accept: application/json
+}
+body:json {
+  {
+    "name": "New Tasty Category",
+    "slug": "new-tasty-category",
+    "description": "A category for testing."
+  }
+}
+script:post-response {
+  if (res.status === 201 && res.body.data) {
+    bru.setEnvVar("test_category_id", res.body.data.id);
+  }
+}
+tests {
+  test("Status is 201", function() {
+    expect(res.status).to.equal(201);
+  });
+}

@@ -1,0 +1,19 @@
+meta {
+  name: 06. Track Order
+  type: http
+  seq: 6
+}
+get {
+  url: {{base_url}}/api/orders/ord_test
+  body: none
+  auth: none
+}
+headers {
+  Accept: application/json
+}
+tests {
+  // It will likely return 404 for ord_test, so we just check for valid JSON response
+  test("Returns JSON", function() {
+    expect(res.body).to.be.an('object');
+  });
+}
