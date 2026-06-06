@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use App\Models\Product;
-use App\Models\Category;
-use App\Models\User;
 
 class OrderApiTest extends TestCase
 {
@@ -19,7 +19,7 @@ class OrderApiTest extends TestCase
             'name' => 'Waffle',
             'category_id' => $category->id,
             'price' => 5.00,
-            'isActive' => true
+            'isActive' => true,
         ]);
 
         $response = $this->postJson('/api/orders', [
@@ -27,26 +27,26 @@ class OrderApiTest extends TestCase
                 [
                     'product_id' => $product->id,
                     'quantity' => 2,
-                    'price' => 5.00
-                ]
-            ]
+                    'price' => 5.00,
+                ],
+            ],
         ]);
 
         $response->assertStatus(200);
-        
+
         $this->assertDatabaseHas('orders', [
             'user_id' => null,
             'total_price' => 10.00,
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
-        
+
         $this->assertDatabaseHas('order_items', [
             'product_id' => $product->id,
             'quantity' => 2,
-            'price_at_time' => 5.00
+            'price_at_time' => 5.00,
         ]);
     }
-    
+
     public function test_user_can_create_order()
     {
         /** @var User $user */
@@ -56,7 +56,7 @@ class OrderApiTest extends TestCase
             'name' => 'Waffle',
             'category_id' => $category->id,
             'price' => 5.00,
-            'isActive' => true
+            'isActive' => true,
         ]);
 
         $response = $this->actingAs($user)->postJson('/api/orders', [
@@ -64,16 +64,16 @@ class OrderApiTest extends TestCase
                 [
                     'product_id' => $product->id,
                     'quantity' => 1,
-                    'price' => 5.00
-                ]
-            ]
+                    'price' => 5.00,
+                ],
+            ],
         ]);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('orders', [
             'user_id' => $user->id,
             'total_price' => 5.00,
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
     }
 }

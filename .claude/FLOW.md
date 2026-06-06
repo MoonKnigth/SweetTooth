@@ -27,18 +27,22 @@ flowchart TD
         AdminOrders["จัดการออเดอร์ (/admin/orders)"]:::frontend
     end
 
-    subgraph Backend ["⚙️ Backend API (Laravel Sanctum)"]
+    subgraph Backend ["⚙️ Backend API (Laravel JWT)"]
         PublicProductsAPI["GET /api/products & categories"]:::backend
         OrderAPI["POST /api/orders"]:::backend
         AuthAPI["POST /api/login, /register"]:::backend
         AdminAPI["Admin API (Protected)"]:::backend
+        WebhookAPI["POST /api/webhooks/payment-center"]:::newfeature
     end
+
+    PaymentCenter(["💳 Payment Center (External)"]):::newfeature
 
     subgraph DB ["🗄️ Database (PostgreSQL)"]
         UsersDB[("ตาราง Users (UUID)")]:::database
         CategoriesDB[("ตาราง Categories (ID)")]:::newfeature
         ProductsDB[("ตาราง Products (UUID + Soft Deletes)")]:::database
         OrdersDB[("ตาราง Orders & Items (UUID)")]:::database
+        PaymentsDB[("ตาราง Payments (UUID)")]:::newfeature
     end
 
     Guest -->|"เข้าชมเว็บไซต์"| Landing
@@ -48,8 +52,16 @@ flowchart TD
     PublicProductsAPI -.->|"Query"| CategoriesDB
     PublicProductsAPI -.->|"Query"| ProductsDB
     MenuCart -->|"กด Checkout ยืนยัน"| OrderAPI
-    OrderAPI -.->|"บันทึกออเดอร์"| OrdersDB
-    OrderAPI -- "คืนค่า Tracking (UUID)" --> GuestTracking
+    OrderAPI -.->|"บันทึก Order + Payment"| OrdersDB
+    OrderAPI -.->|"บันทึก Payment"| PaymentsDB
+    OrderAPI -->|"POST /api/v1/payments"| PaymentCenter
+    PaymentCenter -- "คืน checkout_url" --> OrderAPI
+    OrderAPI -- "คืน checkout_url" --> MenuCart
+    MenuCart -->|"Redirect ไป Payment Center"| PaymentCenter
+    PaymentCenter -->|"จ่ายเงินเสร็จ, Redirect กลับ"| Landing
+    PaymentCenter -->|"Webhook callback"| WebhookAPI
+    WebhookAPI -.->|"อัปเดต Payment status"| PaymentsDB
+    WebhookAPI -.->|"อัปเดต Order status"| OrdersDB
 
     Guest -->|"ต้องการเป็นสมาชิก"| AuthPages
     AuthPages -->|"ส่งอีเมล & รหัสผ่าน"| AuthAPI
@@ -133,13 +145,15 @@ flowchart TD
 * [ ] **Task 2.3 (E2E Script):** เขียนสคริปต์จำลองพฤติกรรมลูกค้า: สมัครสมาชิก -> ล็อกอิน -> เลือกขนมลงตะกร้า -> เช็คเอาท์
 * [ ] **Task 2.4:** รันเทส E2E ผ่าน Load Balancer เพื่อยืนยันว่า State ไม่หลุดและ Core Flow ทำงานได้จริง
 
-## 📍 Phase 3: Core E-Commerce Feature (Payment Gateway)
+## 📍 Phase 3: Core E-Commerce Feature (Payment Gateway) — 🔄 In Progress
 
-* [ ] **Task 3.1:** ออกแบบ Schema เก็บข้อมูล Transaction และ Payment Status
-* [ ] **Task 3.2:** เชื่อมต่อ **Stripe API** สำหรับระบบตัดบัตรเครดิต/เดบิต
-* [ ] **Task 3.3 (Webhook & Idempotency):** สร้างระบบรับ Webhook จาก Stripe พร้อมจัดการ Idempotency (ป้องกันการตัดเงิน/เพิ่มออเดอร์ซ้ำซ้อน)
-* [ ] **Task 3.4 (Local Webhook):** ติดตั้ง **Stripe CLI** เพื่อทำ Port Forwarding รับ Webhook กลับมาที่ Docker ในเครื่อง Local
-* [ ] **Task 3.5:** อัปเดต E2E Test ให้ครอบคลุมการกดจ่ายเงินด้วยบัญชีจำลอง (Test Card)
+* [x] **Task 3.1:** สร้าง Migration `payments` table (UUID, reference, charge_id, amount, status enum) และเพิ่ม status `paid`/`cancelled` ใน `orders` table
+* [x] **Task 3.2:** สร้าง `SweetToothPaymentClient` Service เชื่อมต่อ **Payment Center** (POST /api/v1/payments + HMAC-SHA256 Webhook Verification)
+* [x] **Task 3.3:** Refactor `OrderController` — สร้าง Order/Payment (pending) → เรียก Payment Center → คืน `checkout_url` ให้ Frontend redirect
+* [x] **Task 3.4 (Webhook):** สร้าง `PaymentWebhookController` (POST /api/webhooks/payment-center) รับ callback, verify signature, อัปเดต Payment+Order status
+* [x] **Task 3.5 (Frontend):** อัปเดต `AppContext.tsx` ให้ redirect ไป Payment Center แทนการเปิด Success Modal
+* [x] **Task 3.6:** รัน Migration และทดสอบ End-to-End flow กับ Payment Center จริง
+* [x] **Task 3.7:** สร้างหน้า `/checkout/complete` สำหรับ return URL หลังจ่ายเงินสำเร็จ
 
 ## 📍 Phase 4: Extreme Performance & Concurrency
 

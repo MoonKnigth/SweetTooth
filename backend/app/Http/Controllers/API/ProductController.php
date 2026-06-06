@@ -11,7 +11,7 @@ class ProductController extends Controller
     public function index(): JsonResponse
     {
         $products = Product::with('category')->where('isActive', true)->get();
-        
+
         $formattedProducts = $products->map(function ($product) {
             return [
                 'id' => $product->id,
@@ -29,7 +29,7 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $formattedProducts
+            'data' => $formattedProducts,
         ]);
     }
 }

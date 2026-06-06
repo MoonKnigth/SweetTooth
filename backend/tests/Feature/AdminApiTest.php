@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Category;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class AdminApiTest extends TestCase
 {
@@ -16,20 +16,20 @@ class AdminApiTest extends TestCase
     {
         $admin = User::factory()->create(['role' => 'admin']);
         Sanctum::actingAs($admin);
-        
+
         $category = Category::create(['name' => 'Dessert', 'slug' => 'dessert']);
 
         $response = $this->postJson('/api/admin/products', [
             'name' => 'New Awesome Product',
             'category_id' => $category->id,
             'price' => 10.00,
-            'isActive' => true
+            'isActive' => true,
         ]);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('products', [
             'name' => 'New Awesome Product',
-            'price' => 10.00
+            'price' => 10.00,
         ]);
     }
 
@@ -37,19 +37,19 @@ class AdminApiTest extends TestCase
     {
         $customer = User::factory()->create(['role' => 'customer']);
         Sanctum::actingAs($customer);
-        
+
         $category = Category::create(['name' => 'Dessert', 'slug' => 'dessert']);
 
         $response = $this->postJson('/api/admin/products', [
             'name' => 'New Awesome Product',
             'category_id' => $category->id,
             'price' => 10.00,
-            'isActive' => true
+            'isActive' => true,
         ]);
 
         $response->assertStatus(403);
         $this->assertDatabaseMissing('products', [
-            'name' => 'New Awesome Product'
+            'name' => 'New Awesome Product',
         ]);
     }
 }

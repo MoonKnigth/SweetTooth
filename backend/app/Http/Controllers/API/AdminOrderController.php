@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AdminOrderController extends Controller
 {
@@ -19,7 +19,7 @@ class AdminOrderController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $orders
+            'data' => $orders,
         ]);
     }
 
@@ -29,15 +29,15 @@ class AdminOrderController extends Controller
     public function updateStatus(Request $request, string $id): JsonResponse
     {
         $request->validate([
-            'status' => 'required|string|in:pending,paid,completed,cancelled'
+            'status' => 'required|string|in:pending,paid,completed,cancelled',
         ]);
 
         $order = Order::find($id);
 
-        if (!$order) {
+        if (! $order) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Order not found'
+                'message' => 'Order not found',
             ], 404);
         }
 
@@ -47,7 +47,7 @@ class AdminOrderController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Order status updated successfully',
-            'data' => $order
+            'data' => $order,
         ]);
     }
 }

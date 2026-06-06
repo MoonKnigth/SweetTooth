@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
@@ -12,15 +12,15 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         $categoriesData = [
-            'Waffle', 'Crème Brûlée', 'Macaron', 'Tiramisu', 
-            'Baklava', 'Pie', 'Cake', 'Brownie', 'Panna Cotta'
+            'Waffle', 'Crème Brûlée', 'Macaron', 'Tiramisu',
+            'Baklava', 'Pie', 'Cake', 'Brownie', 'Panna Cotta',
         ];
 
         $categories = [];
         foreach ($categoriesData as $catName) {
             $categories[$catName] = Category::create([
                 'name' => $catName,
-                'slug' => Str::slug($catName)
+                'slug' => Str::slug($catName),
             ])->id;
         }
 

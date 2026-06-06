@@ -4,10 +4,11 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
+use PHPOpenSourceSaver\JWTAuth\JWTGuard;
 
 class AuthController extends Controller
 {
@@ -26,10 +27,10 @@ class AuthController extends Controller
             'role' => 'customer',
         ]);
 
-        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        /** @var JWTGuard $guard */
         $guard = auth('api');
         $token = $guard->login($user);
-        
+
         $refreshToken = Str::random(60);
         $user->update(['refresh_token' => hash('sha256', $refreshToken)]);
 
@@ -45,7 +46,7 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        /** @var JWTGuard $guard */
         $guard = auth('api');
 
         if (! $token = $guard->attempt($credentials)) {
@@ -55,7 +56,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $guard->user();
         $refreshToken = Str::random(60);
         $user->update(['refresh_token' => hash('sha256', $refreshToken)]);
@@ -69,20 +70,20 @@ class AuthController extends Controller
             'refresh_token' => 'required|string',
         ]);
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = User::where('refresh_token', hash('sha256', $request->refresh_token))->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid refresh token',
             ], 401);
         }
 
-        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        /** @var JWTGuard $guard */
         $guard = auth('api');
         $token = $guard->login($user);
-        
+
         $newRefreshToken = Str::random(60);
         $user->update(['refresh_token' => hash('sha256', $newRefreshToken)]);
 
@@ -91,39 +92,39 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        /** @var JWTGuard $guard */
         $guard = auth('api');
-        /** @var \App\Models\User|null $user */
+        /** @var User|null $user */
         $user = $guard->user();
-        
+
         if ($user) {
             $user->update(['refresh_token' => null]);
         }
-        
+
         $guard->logout();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Logged out successfully'
+            'message' => 'Logged out successfully',
         ]);
     }
 
     public function user(Request $request): JsonResponse
     {
-        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        /** @var JWTGuard $guard */
         $guard = auth('api');
-        
+
         return response()->json([
             'status' => 'success',
-            'data' => $guard->user()
+            'data' => $guard->user(),
         ]);
     }
 
     protected function respondWithToken(string $token, string $refreshToken, User $user, string $message = '', int $statusCode = 200): JsonResponse
     {
-        /** @var \PHPOpenSourceSaver\JWTAuth\JWTGuard $guard */
+        /** @var JWTGuard $guard */
         $guard = auth('api');
-        
+
         return response()->json([
             'status' => 'success',
             'message' => $message,
@@ -132,8 +133,8 @@ class AuthController extends Controller
                 'access_token' => $token,
                 'refresh_token' => $refreshToken,
                 'token_type' => 'Bearer',
-                'expires_in' => $guard->factory()->getTTL() * 60
-            ]
+                'expires_in' => $guard->factory()->getTTL() * 60,
+            ],
         ], $statusCode);
     }
 }
