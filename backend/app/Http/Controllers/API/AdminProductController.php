@@ -4,8 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AdminProductController extends Controller
 {
@@ -16,7 +16,7 @@ class AdminProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'image_thumbnail' => 'nullable|string',
-            'isActive' => 'boolean'
+            'isActive' => 'boolean',
         ]);
 
         $product = Product::create($validated);
@@ -24,14 +24,14 @@ class AdminProductController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Product created successfully',
-            'data' => $product
+            'data' => $product,
         ], 201);
     }
 
     public function update(Request $request, string $id): JsonResponse
     {
         $product = Product::find($id);
-        if (!$product) {
+        if (! $product) {
             return response()->json(['status' => 'error', 'message' => 'Product not found'], 404);
         }
 
@@ -40,7 +40,7 @@ class AdminProductController extends Controller
             'category_id' => 'sometimes|required|exists:categories,id',
             'price' => 'sometimes|required|numeric|min:0',
             'image_thumbnail' => 'nullable|string',
-            'isActive' => 'boolean'
+            'isActive' => 'boolean',
         ]);
 
         $product->update($validated);
@@ -48,7 +48,7 @@ class AdminProductController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Product updated successfully',
-            'data' => $product
+            'data' => $product,
         ]);
     }
 
@@ -56,7 +56,7 @@ class AdminProductController extends Controller
     {
 
         $product = Product::find($id);
-        if (!$product) {
+        if (! $product) {
             return response()->json(['status' => 'error', 'message' => 'Product not found'], 404);
         }
 
@@ -64,7 +64,7 @@ class AdminProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Product deleted successfully'
+            'message' => 'Product deleted successfully',
         ]);
     }
 }

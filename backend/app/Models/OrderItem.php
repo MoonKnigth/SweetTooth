@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderItem extends Model
 {
-    use HasUuids, HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'order_id',
         'product_id',
         'quantity',
-        'price_at_time'
+        'price_at_time',
     ];
 
     protected $casts = [

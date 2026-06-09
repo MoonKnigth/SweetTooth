@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Category;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class CategoryApiTest extends TestCase
 {
@@ -15,81 +15,81 @@ class CategoryApiTest extends TestCase
     public function test_can_get_all_categories()
     {
         Category::create(['name' => 'Drinks', 'slug' => 'drinks']);
-        
+
         $response = $this->getJson('/api/categories');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'status',
-                     'data' => [
-                         '*' => ['id', 'name', 'slug']
-                     ]
-                 ])
-                 ->assertJsonFragment(['name' => 'Drinks']);
+            ->assertJsonStructure([
+                'status',
+                'data' => [
+                    '*' => ['id', 'name', 'slug'],
+                ],
+            ])
+            ->assertJsonFragment(['name' => 'Drinks']);
     }
 
     public function test_admin_can_create_category()
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        Sanctum::actingAs($admin);
+        $this->actingAs($admin, 'api');
 
         $response = $this->postJson('/api/admin/categories', [
-            'name' => 'New Category'
+            'name' => 'New Category',
         ]);
 
         $response->assertStatus(201);
         $this->assertDatabaseHas('categories', [
             'name' => 'New Category',
-            'slug' => 'new-category'
+            'slug' => 'new-category',
         ]);
     }
 
     public function test_customer_cannot_create_category()
     {
         $customer = User::factory()->create(['role' => 'customer']);
-        Sanctum::actingAs($customer);
+        $this->actingAs($customer, 'api');
 
         $response = $this->postJson('/api/admin/categories', [
-            'name' => 'New Category'
+            'name' => 'New Category',
         ]);
 
         $response->assertStatus(403);
         $this->assertDatabaseMissing('categories', [
-            'name' => 'New Category'
+            'name' => 'New Category',
         ]);
     }
-    
+
     public function test_admin_can_update_category()
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        Sanctum::actingAs($admin);
-        
+        $this->actingAs($admin, 'api');
+
         $category = Category::create(['name' => 'Old Name', 'slug' => 'old-name']);
 
         $response = $this->putJson("/api/admin/categories/{$category->id}", [
-            'name' => 'Updated Name'
+            'name' => 'Updated Name',
         ]);
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('categories', [
             'id' => $category->id,
             'name' => 'Updated Name',
-            'slug' => 'updated-name'
+            'slug' => 'updated-name',
         ]);
     }
 
     public function test_admin_can_delete_category()
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        Sanctum::actingAs($admin);
-        
+        $this->actingAs($admin, 'api');
+
         $category = Category::create(['name' => 'To Delete', 'slug' => 'to-delete']);
 
         $response = $this->deleteJson("/api/admin/categories/{$category->id}");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('categories', [
-            'id' => $category->id
+            'id' => $category->id,
         ]);
     }
 }

@@ -29,7 +29,8 @@ function AuthCallbackContent() {
 
       if (token) {
         hasProcessed.current = true;
-        const success = await oauthLogin(token);
+        const refreshToken = searchParams.get('refreshToken') || '';
+        const success = await oauthLogin(token, refreshToken);
         if (success) {
           router.push('/');
         } else {

@@ -41,4 +41,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'payment_center' => [
+        'base_url' => env('PAYMENT_CENTER_URL', 'http://payment-center.local'),
+        'access_key' => env('PAYMENT_ACCESS_KEY'),
+        'secret_key' => env('PAYMENT_SECRET_KEY'),
+        'webhook_secret' => env('PAYMENT_WEBHOOK_SECRET'),
+    ],
+
 ];

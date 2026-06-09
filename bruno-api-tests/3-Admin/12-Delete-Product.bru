@@ -1,15 +1,15 @@
 meta {
-  name: 05. Get Profile
+  name: 12. Delete Product
   type: http
-  seq: 5
+  seq: 12
 }
-get {
-  url: {{base_url}}/api/user
+delete {
+  url: {{base_url}}/api/admin/products/{{test_product_id}}
   body: none
   auth: bearer
+}
 headers {
   Accept: application/json
-}
 }
 auth:bearer {
   token: {{token}}
@@ -18,7 +18,7 @@ tests {
   test("Status is 200", function() {
     expect(res.status).to.equal(200);
   });
-  test("Returns user data", function() {
-    expect(res.body.data.id).to.be.a('string');
+  test("Product deleted successfully", function() {
+    expect(res.body.status).to.equal("success");
   });
 }

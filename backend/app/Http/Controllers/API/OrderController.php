@@ -4,12 +4,13 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\Product;
+use App\Services\SweetToothPaymentClient;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\JsonResponse;
 
 class OrderController extends Controller
 {
@@ -24,6 +25,7 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
+            // 1. คำนวณราคาจาก Database เท่านั้น (ห้ามเชื่อค่าจาก Frontend)
             $totalPrice = 0;
             $orderItemsData = [];
 
@@ -39,35 +41,64 @@ class OrderController extends Controller
                 ];
             }
 
+            // 2. สร้าง Order (status: pending) — ใช้ auth('api') ตามกฎ JWT
             $order = Order::create([
-                'user_id' => auth('sanctum')->user()?->id,
+                'user_id' => auth('api')->user()?->id,
                 'total_price' => $totalPrice,
-                'status' => 'pending'
+                'status' => 'pending',
             ]);
 
             foreach ($orderItemsData as $itemData) {
                 $order->items()->create($itemData);
             }
 
-            $order->update(['status' => 'completed']);
+            // 3. สร้าง Payment record (status: pending)
+            $payment = Payment::create([
+                'order_id' => $order->id,
+                'amount' => $totalPrice,
+                'status' => 'pending',
+            ]);
+
+            // 4. เรียก Payment Center เพื่อรับ checkout_url
+            $paymentClient = new SweetToothPaymentClient;
+            $frontendBaseUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
+            $returnUrl = $frontendBaseUrl . '/checkout/complete?order_id=' . $order->id;
+
+            $paymentResult = $paymentClient->createPayment(
+                amountInSatang: (int) round($totalPrice * 100),
+                returnUrl: $returnUrl,
+            );
+
+            // 5. อัปเดต Payment record ด้วย reference ที่ได้จาก Payment Center
+            $payment->update([
+                'reference' => $paymentResult['reference'],
+            ]);
 
             DB::commit();
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Order confirmed successfully',
+                'message' => 'Order created, redirecting to payment',
                 'data' => [
-                    'orderId' => 'ord_' . substr($order->id, 0, 8),
-                    'status' => 'paid',
-                ]
-            ], 200);
+                    'order_id' => $order->id,
+                    'checkout_url' => $paymentResult['checkout_url'],
+                ],
+            ], 201);
+        } catch (\DomainException $e) {
+            DB::rollBack();
+            Log::error('Payment Center error: ' . $e->getMessage());
 
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 502);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Order creation failed: ' . $e->getMessage());
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Something went wrong, please try again later.'
+                'message' => 'Something went wrong, please try again later.',
             ], 500);
         }
     }
@@ -75,41 +106,31 @@ class OrderController extends Controller
     public function userOrders(Request $request): JsonResponse
     {
         $orders = Order::where('user_id', $request->user()->id)
-            ->with(['items.product'])
+            ->with(['items.product', 'latestPayment'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return response()->json([
             'status' => 'success',
-            'data' => $orders
+            'data' => $orders,
         ]);
     }
 
     public function show(string $id): JsonResponse
     {
-        $realId = str_replace(['ord_', '%', '_'], '', $id);
+        $order = Order::with(['items.product', 'latestPayment'])
+            ->find($id);
 
-        if (strlen($realId) < 8) {
+        if (! $order) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid order ID format'
-            ], 400);
-        }
-        
-        $order = Order::with(['items.product'])
-            ->where('id', 'LIKE', $realId . '%')
-            ->first();
-
-        if (!$order) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Order not found'
+                'message' => 'Order not found',
             ], 404);
         }
 
         return response()->json([
             'status' => 'success',
-            'data' => $order
+            'data' => $order,
         ]);
     }
 }

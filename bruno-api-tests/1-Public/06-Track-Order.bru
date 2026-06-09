@@ -4,7 +4,7 @@ meta {
   seq: 6
 }
 get {
-  url: {{base_url}}/api/orders/ord_test
+  url: {{base_url}}/api/orders/{{order_id}}
   body: none
   auth: none
 }
@@ -12,8 +12,11 @@ headers {
   Accept: application/json
 }
 tests {
-  // It will likely return 404 for ord_test, so we just check for valid JSON response
-  test("Returns JSON", function() {
-    expect(res.body).to.be.an('object');
+  test("Status is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("Returns valid order data", function() {
+    expect(res.body.status).to.equal("success");
+    expect(res.body.data.id).to.exist;
   });
 }

@@ -1,12 +1,10 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # Set working directory
 WORKDIR /app
 
-# Enable corepack and prepare pnpm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# แทนที่ corepack ด้วยการติดตั้ง pnpm ผ่าน npm โดยตรงเพื่อแก้ปัญหา VM Error
+RUN npm install -g pnpm
 
 # Install dependencies
 FROM base AS deps

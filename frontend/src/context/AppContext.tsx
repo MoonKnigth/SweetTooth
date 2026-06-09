@@ -21,7 +21,7 @@ interface AppContextProps {
   
   // Actions
   login: (email: string, password: string) => Promise<boolean>;
-  oauthLogin: (token: string) => Promise<boolean>;
+  oauthLogin: (token: string, refreshToken?: string) => Promise<boolean>;
   registerUser: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
   handleAddToCart: (productId: string) => void;
@@ -124,6 +124,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
           secure: process.env.NODE_ENV === 'production', 
           sameSite: 'strict' 
         });
+        if (data.data.refresh_token) {
+          Cookies.set('refresh_token', data.data.refresh_token, { 
+            expires: 30, // 30 วัน
+            secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'strict' 
+          });
+        }
         toast.success('Logged in successfully!');
         return true;
       }
@@ -136,7 +143,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const oauthLogin = async (newToken: string): Promise<boolean> => {
+  const oauthLogin = async (newToken: string, refreshToken: string = ''): Promise<boolean> => {
     try {
       setToken(newToken);
       Cookies.set('access_token', newToken, { 
@@ -144,6 +151,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         secure: process.env.NODE_ENV === 'production', 
         sameSite: 'strict' 
       });
+      if (refreshToken) {
+        Cookies.set('refresh_token', refreshToken, { 
+          expires: 30,
+          secure: process.env.NODE_ENV === 'production', 
+          sameSite: 'strict' 
+        });
+      }
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
         headers: {
@@ -213,7 +227,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setToken(null);
     setUser(null);
     Cookies.remove('access_token');
-    toast.info('You have been logged out.');
+    toast.info('Logged out successfully');
   };
 
   // --- Cart Handlers ---
@@ -250,38 +264,39 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const handleConfirmOrder = async () => {
     try {
       const items = Object.keys(cart).map(id => ({
-        product_id: id, // It's UUID now
-        quantity: cart[id]
+        product_id: id,
+        quantity: cart[id],
       }));
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
       };
-      
+
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
+      toast.info('Creating your order...', { autoClose: 2000 });
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ items })
+        body: JSON.stringify({ items }),
       });
 
       const data = await response.json();
-      if (data.status === 'success') {
-        toast.success('Order confirmed successfully! 🎉');
-        if (data.data && data.data.orderId) {
-          setLastOrderId(data.data.orderId);
-        }
-        setIsModalOpen(true);
+
+      if (data.status === 'success' && data.data?.checkout_url) {
+        toast.success('Redirecting to payment... 💳');
+        // Redirect ไปยัง Payment Center
+        window.location.href = data.data.checkout_url;
       } else {
-        toast.error('Failed to confirm order: ' + (data.message || 'Unknown error'));
+        toast.error('Failed to create order: ' + (data.message || 'Unknown error'));
       }
     } catch (err) {
       console.error(err);
-      toast.error('Error confirming order');
+      toast.error('Error creating order. Please try again.');
     }
   };
 

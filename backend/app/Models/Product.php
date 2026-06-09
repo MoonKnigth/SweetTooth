@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasUuids, HasFactory, SoftDeletes;
+    use HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -19,7 +19,7 @@ class Product extends Model
         'image_mobile',
         'image_tablet',
         'image_desktop',
-        'isActive'
+        'isActive',
     ];
 
     protected $casts = [
