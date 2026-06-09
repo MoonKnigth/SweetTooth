@@ -79,6 +79,11 @@ class PaymentWebhookController extends Controller
                 $payment->order()->update(['status' => 'cancelled']);
             }
 
+            // If refunded, update Order to 'refunded'
+            if ($data['status'] === 'refunded') {
+                $payment->order()->update(['status' => 'refunded']);
+            }
+
             DB::commit();
 
             Log::info('Payment webhook processed', [

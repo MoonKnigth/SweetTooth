@@ -52,11 +52,13 @@ class SocialAuthController extends Controller
             $refreshToken = Str::random(60);
             $user->update(['refresh_token' => hash('sha256', $refreshToken)]);
 
-            return redirect()->away('http://localhost:3001/auth/callback?token='.$token.'&refreshToken='.$refreshToken);
+            $frontendUrl = config('app.frontend_url');
+            return redirect()->away($frontendUrl.'/auth/callback?token='.$token.'&refreshToken='.$refreshToken);
         } catch (\Exception $e) {
             Log::error('Google OAuth failed: '.$e->getMessage());
 
-            return redirect()->away('http://localhost:3001/login?error=oauth_failed');
+            $frontendUrl = config('app.frontend_url');
+            return redirect()->away($frontendUrl.'/login?error=oauth_failed');
         }
     }
 }

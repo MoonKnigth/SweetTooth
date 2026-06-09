@@ -77,6 +77,42 @@ class SweetToothPaymentClient
     }
 
     /**
+     * Refund a payment in the Payment Center.
+     *
+     * @param string $reference The payment reference ID
+     * @return array
+     *
+     * @throws \RuntimeException
+     */
+    public function refundPayment(string $reference): array
+    {
+        try {
+            $response = Http::timeout(10)->withHeaders([
+                'X-Access-Key' => $this->accessKey,
+                'X-Secret-Key' => $this->secretKey,
+                'X-Admin-Token' => config('services.payment_center.admin_token', 'secret-admin-token'),
+            ])->post("{$this->baseUrl}/api/v1/admin/payments/{$reference}/refund");
+
+            if (! $response->successful()) {
+                Log::error('Payment Center: Failed to refund payment', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+
+                throw new \DomainException(
+                    'Failed to refund payment: '.($response->json('message') ?? 'Unknown error')
+                );
+            }
+
+            return $response->json();
+
+        } catch (ConnectionException $e) {
+            Log::error('Payment Center Connection Error: '.$e->getMessage());
+            throw new \DomainException('Could not connect to Payment Center. Is it running?');
+        }
+    }
+
+    /**
      * Verify the HMAC-SHA256 signature of a received Webhook/Callback payload.
      *
      * @param  string  $payload  The raw JSON string received from Payment Center

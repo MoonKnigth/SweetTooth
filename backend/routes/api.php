@@ -47,5 +47,6 @@ Route::middleware('auth:api')->group(function () {
 
         Route::get('/orders', [AdminOrderController::class, 'index']);
         Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+        Route::post('/orders/{id}/refund', [AdminOrderController::class, 'refund']);
     });
 });

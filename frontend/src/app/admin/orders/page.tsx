@@ -71,11 +71,39 @@ export default function AdminOrdersPage() {
     }
   };
 
+  const handleRefund = async (orderId: string) => {
+    if (!window.confirm('Are you sure you want to refund this order?')) return;
+    
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/orders/${orderId}/refund`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.status === 'success') {
+        toast.success(`Refund process initiated for order`);
+        setOrders(orders.map(o => o.id === orderId ? { ...o, status: 'refunded' as any } : o));
+      } else {
+        toast.error(data.message || 'Failed to initiate refund');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Network error while processing refund');
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'bg-green-100 text-green-800';
       case 'paid': return 'bg-blue-100 text-blue-800';
       case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'refunded': return 'bg-purple-100 text-purple-800';
+      case 'refunding': return 'bg-orange-100 text-orange-800';
       default: return 'bg-yellow-100 text-yellow-800';
     }
   };
@@ -135,16 +163,28 @@ export default function AdminOrdersPage() {
                       </span>
                     </td>
                     <td className="p-4 text-right">
-                      <select 
-                        value={order.status}
-                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                        className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#c73b0f]"
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="paid">Paid</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
+                      <div className="flex flex-col items-end gap-2">
+                        <select 
+                          value={order.status}
+                          onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                          className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#c73b0f]"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="paid">Paid</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                          <option value="refunding">Refunding</option>
+                          <option value="refunded">Refunded</option>
+                        </select>
+                        {order.status === 'paid' && (
+                          <button
+                            onClick={() => handleRefund(order.id)}
+                            className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors"
+                          >
+                            คืนเงิน (Refund)
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

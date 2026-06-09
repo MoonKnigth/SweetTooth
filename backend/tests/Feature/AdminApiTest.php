@@ -14,8 +14,9 @@ class AdminApiTest extends TestCase
 
     public function test_admin_can_create_product()
     {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $admin */
         $admin = User::factory()->create(['role' => 'admin']);
-        Sanctum::actingAs($admin);
+        $this->actingAs($admin, 'api');
 
         $category = Category::create(['name' => 'Dessert', 'slug' => 'dessert']);
 
@@ -35,8 +36,9 @@ class AdminApiTest extends TestCase
 
     public function test_customer_cannot_create_product()
     {
+        /** @var \Illuminate\Contracts\Auth\Authenticatable $customer */
         $customer = User::factory()->create(['role' => 'customer']);
-        Sanctum::actingAs($customer);
+        $this->actingAs($customer, 'api');
 
         $category = Category::create(['name' => 'Dessert', 'slug' => 'dessert']);
 

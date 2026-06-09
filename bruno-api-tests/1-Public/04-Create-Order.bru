@@ -3,32 +3,38 @@ meta {
   type: http
   seq: 4
 }
+
 post {
   url: {{base_url}}/api/orders
   body: json
   auth: bearer
 }
+
 headers {
   Accept: application/json
 }
+
 auth:bearer {
   token: {{token}}
 }
+
 body:json {
   {
     "items": [
       {
-        "product_id": "{{first_product_id}}",
-        "quantity": 2
+              "product_id": "019ea6c0-3894-70fc-9260-60f63fa4a57f",
+        "quantity": 10
       }
     ]
   }
 }
+
 script:post-response {
   if (res.status === 200 && res.body.data && res.body.data.orderId) {
     bru.setEnvVar("order_id", res.body.data.orderId);
   }
 }
+
 tests {
   test("Status is 200", function() {
     expect(res.status).to.equal(200);

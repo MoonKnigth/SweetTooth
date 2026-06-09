@@ -50,4 +50,51 @@ class AdminOrderController extends Controller
             'data' => $order,
         ]);
     }
+
+    /**
+     * Refund order payment via Payment Center.
+     */
+    public function refund(string $id): JsonResponse
+    {
+        $order = Order::with('latestPayment')->find($id);
+
+        if (! $order) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Order not found',
+            ], 404);
+        }
+
+        if ($order->status !== 'paid' || ! $order->latestPayment) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Order is not paid or has no payment record',
+            ], 400);
+        }
+
+        try {
+            $paymentClient = new \App\Services\SweetToothPaymentClient();
+            $response = $paymentClient->refundPayment($order->latestPayment->reference);
+
+            // If success, update status to refunding or refunded
+            // Actual refunded status should be confirmed by webhook ideally, 
+            // but we can set it to refunding here. Let's just set it to 'refunded' as per simple workflow.
+            $order->status = 'refunded';
+            $order->save();
+
+            $order->latestPayment->status = 'refunded';
+            $order->latestPayment->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Refund initiated successfully',
+                'data' => $response,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

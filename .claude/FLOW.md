@@ -155,6 +155,14 @@ flowchart TD
 * [x] **Task 3.6:** รัน Migration และทดสอบ End-to-End flow กับ Payment Center จริง
 * [x] **Task 3.7:** สร้างหน้า `/checkout/complete` สำหรับ return URL หลังจ่ายเงินสำเร็จ
 
+## 📍 Phase 3.5: Compliance & Production Readiness (เตรียมเว็บให้ผ่านกฎ Omise)
+
+* [x] **Task 3.5.1 (Legal Pages):** สร้างหน้าเว็บแสดงข้อตกลงทางกฎหมาย ได้แก่ `/terms`, `/privacy-policy`, และ `/refund-policy` เพื่อให้ผ่านเกณฑ์ตรวจสอบของ Omise
+* [x] **Task 3.5.2 (Contact Info):** เพิ่มหน้า `/contact` หรือเพิ่มข้อมูลที่อยู่และเบอร์ติดต่อร้านค้าลงในส่วน Footer ของเว็บไซต์
+* [ ] **Task 3.5.3 (Environment Switch):** ปรับไฟล์ `.env` ของ SweetTooth บนเซิร์ฟเวอร์จริง ให้ยิง API ไปที่ URL ของ Payment Center Production (`PAYMENT_CENTER_URL=https://payment.yourdomain.com`)
+* [ ] **Task 3.5.4 (Live Keys Setup):** นำ Access Key และ Secret Key ของเซิร์ฟเวอร์ Payment Center (Production) มาใส่ใน `.env` ของ SweetTooth 
+* [ ] **Task 3.5.5 (E2E Live Test):** จำลองการสั่งซื้อบน Production Environment ด้วยบัตรเครดิตจริง (รูดแล้วกดยกเลิก/Refund ภายหลัง) เพื่อยืนยันว่าข้อมูลไหลผ่าน Nginx Load Balancer และอัปเดต Database ได้อย่างสมบูรณ์
+
 ## 📍 Phase 4: Extreme Performance & Concurrency
 
 * [ ] **Task 4.1 (Caching):** ติดตั้ง **Redis** ทำ Caching ข้อมูลหมวดหมู่และสินค้า ลดภาระ PostgreSQL

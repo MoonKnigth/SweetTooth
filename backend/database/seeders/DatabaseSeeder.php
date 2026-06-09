@@ -21,14 +21,14 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Admin User',
-            'email' => 'admin@test.com',
+            'email' => 'admin@sweettooth.com',
             'password' => bcrypt('password'),
             'role' => 'admin',
         ]);
 
         User::factory()->create([
             'name' => 'Normal User',
-            'email' => 'user@test.com',
+            'email' => 'user@sweettooth.com',
             'password' => bcrypt('password'),
             'role' => 'customer',
         ]);

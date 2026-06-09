@@ -62,7 +62,7 @@ class OrderController extends Controller
             // 4. เรียก Payment Center เพื่อรับ checkout_url
             $paymentClient = new SweetToothPaymentClient;
             $frontendBaseUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
-            $returnUrl = $frontendBaseUrl.'/checkout/complete?order_id='.$order->id;
+            $returnUrl = $frontendBaseUrl . '/checkout/complete?order_id=' . $order->id;
 
             $paymentResult = $paymentClient->createPayment(
                 amountInSatang: (int) round($totalPrice * 100),
@@ -84,10 +84,9 @@ class OrderController extends Controller
                     'checkout_url' => $paymentResult['checkout_url'],
                 ],
             ], 201);
-
         } catch (\DomainException $e) {
             DB::rollBack();
-            Log::error('Payment Center error: '.$e->getMessage());
+            Log::error('Payment Center error: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',
@@ -95,7 +94,7 @@ class OrderController extends Controller
             ], 502);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Order creation failed: '.$e->getMessage());
+            Log::error('Order creation failed: ' . $e->getMessage());
 
             return response()->json([
                 'status' => 'error',

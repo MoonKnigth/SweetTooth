@@ -31,7 +31,7 @@ class CategoryApiTest extends TestCase
     public function test_admin_can_create_category()
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        Sanctum::actingAs($admin);
+        $this->actingAs($admin, 'api');
 
         $response = $this->postJson('/api/admin/categories', [
             'name' => 'New Category',
@@ -47,7 +47,7 @@ class CategoryApiTest extends TestCase
     public function test_customer_cannot_create_category()
     {
         $customer = User::factory()->create(['role' => 'customer']);
-        Sanctum::actingAs($customer);
+        $this->actingAs($customer, 'api');
 
         $response = $this->postJson('/api/admin/categories', [
             'name' => 'New Category',
@@ -62,7 +62,7 @@ class CategoryApiTest extends TestCase
     public function test_admin_can_update_category()
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        Sanctum::actingAs($admin);
+        $this->actingAs($admin, 'api');
 
         $category = Category::create(['name' => 'Old Name', 'slug' => 'old-name']);
 
@@ -81,7 +81,7 @@ class CategoryApiTest extends TestCase
     public function test_admin_can_delete_category()
     {
         $admin = User::factory()->create(['role' => 'admin']);
-        Sanctum::actingAs($admin);
+        $this->actingAs($admin, 'api');
 
         $category = Category::create(['name' => 'To Delete', 'slug' => 'to-delete']);
 
