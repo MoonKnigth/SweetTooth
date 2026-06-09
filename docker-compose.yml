@@ -31,6 +31,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-secret}
     volumes:
       - ./backend:/var/www
+      - /var/www/vendor # ป้องกันไม่ให้โฟลเดอร์เปล่าจากโฮสต์ไปทับในคอนเทนเนอร์
     depends_on:
       - db
     networks:
