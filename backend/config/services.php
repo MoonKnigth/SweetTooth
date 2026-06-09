@@ -46,6 +46,7 @@ return [
         'access_key' => env('PAYMENT_ACCESS_KEY'),
         'secret_key' => env('PAYMENT_SECRET_KEY'),
         'webhook_secret' => env('PAYMENT_WEBHOOK_SECRET'),
+	'admin_token' => env('PAYMENT_CENTER_ADMIN_TOKEN'),
     ],
 
 ];

@@ -47,7 +47,9 @@ services:
       - ./frontend:/app
       - /app/node_modules # บล็อกไม่ให้ node_modules เครื่องเราไปทับในตู้
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8081/api
+      - NEXT_PUBLIC_API_URL=http://192.168.1.162:8081/api  # 1️⃣ แก้ตรงนี้ให้เป็น IP VM
+    extra_hosts:
+      - "192.168.1.162:host-gateway"
     depends_on:
       - backend
     networks:
